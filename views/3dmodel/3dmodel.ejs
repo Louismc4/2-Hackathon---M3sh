@@ -2,8 +2,8 @@
 
 <html>
     <head>
+        <!--<script src="public/leap-0.6.4.min.js"></script>-->
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <link rel ="stylesheet" type="text/css" href="../stylesheets/3DModel.css">
         <style>
 			body {
 				color: #000;
@@ -26,26 +26,73 @@
 				color: #0080ff;
 			}
         </style>
+        <style>
+            .vignette {
+                      position: fixed;
+                      top: 0;
+                      left: 32.5%;
+                      width: 35%;
+                      height: 50%;
+                      box-shadow: 0 0 200px rgba(0,0,0,1) inset;
+                    
+                    }
+            .vignette2 {
+                      position: fixed;
+                      top: 50%;
+                      left: 0%;
+                      width: 32.5%;
+                      height: 50%;
+                      box-shadow: 0 0 200px rgba(0,0,0,1) inset;
+                    
+                    }
+            .vignette3 {
+                      position: fixed;
+                      top: 50%;
+                      left: 67.5%;
+                      width: 32.5%;
+                      height: 50%;
+                      box-shadow: 0 0 200px rgba(0,0,0,1) inset;
+                    
+                    }
+        </style>
     </head>
     <body>
-        <div id="container"></div>
+        <div class="vignette3"></div>
+        <div class="vignette3"></div>
+        <div class="vignette3">
+          <img id = "left" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" style="border-radius:50%; width:25%; height:auto; margin: 25% auto; display: block; transform: rotate(90deg); opacity: 0.8;">
+        </div>
+        <div class="vignette2"></div>
+        <div class="vignette2"></div>
+        <div class="vignette2">
+          <img id = "top" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" style="border-radius:50%; width:25%; height:auto; margin: 25% auto; display: block; transform: rotate(-90deg); opacity: 0.8;">
+        </div>
+        <div class="vignette"></div>
+        <div class="vignette"></div>
+        <div class="vignette">
+          <img id = "right" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" style="border-radius:50%; width:25%; height:auto; margin: 25% auto; display: block; opacity: 0.8;">
+        </div>
+        <div id="container">
+        </div>
         <script>
             var scene, cameraController, renderer, clusterLoop, windowWidth, windowHeight;
-            var currentFocus = null, nodeSelected = false;
+            var currentFocus = null, nodeSelected = false, detailDisplay = null;
             var cameraMoving = false, cameraControlTarget = new THREE.Vector3(0,0,0);
+            var cameraScaling = false, cameraScaleTarget = 1;
             var nodePolygons = 64;
             var nodeScale = 0.25;
+            var camSpeed = 10;
             var sceneRadius = 500;
             var updateDelay = 1000;
             
             var views = [
                     {
                         left: 0,
-                        top: 0.55,
+                        top: 0.5,
                         width: 0.325,
                         height: 0.5,
-                        background: new THREE.Color(0, 0, 0),
-                        eye: [1800, 0, 0],
+                        background: new THREE.Color(1, 0, 0),
+                        eye: [1900, 0, 0],
                         up: [0, 1, 0],
                         rotation: [90, 0, 0],
                         fov: 45
@@ -55,7 +102,7 @@
                         top: 0,
                         width: 0.35,
                         height: 0.5,
-                        background: new THREE.Color(0, 0, 0),
+                        background: new THREE.Color(1, 0, 0),
                         eye: [0, 1800, 0],
                         up: [0, 0, 1],
                         rotation: [0, 0, 0],
@@ -63,11 +110,11 @@
                     },
                     {
                         left: 0.675,
-                        top: 0.55,
+                        top: 0.5,
                         width: 0.35,
                         height: 0.5,
-                        background: new THREE.Color(0, 0, 0),
-                        eye: [-1800, 0, 0],
+                        background: new THREE.Color(1, 0, 0),
+                        eye: [-1900, 0, 0],
                         up: [0, 1, 0],
                         rotation: [-90, 0, 0],
                         fov: 45
@@ -95,6 +142,7 @@
             		camera.rotation.fromArray(view.rotation);	
             		view.camera = camera;
             		cameraController.add(camera);
+            		cameraControlTarget = cameraController.position;
             		camera.lookAt(cameraController.position);
             	}
             
@@ -107,42 +155,76 @@
             	clusterLoop = new ClusterLoop();
             	clusterLoop.validateCenter();
             	currentFocus = clusterLoop;
+            	cameraControlTarget = currentFocus;
             	
             	document.addEventListener( 'mousedown', onDocumentMouseDown );
             	document.addEventListener( 'keydown', onGetKeyDown );
+            	updateScene(initialDataGrab());
             }
             
-            function dataGrab(locationArray) {
-                var ids = [];
-                var vectors = [];
+            function initialDataGrab() {
+				var ids = [];
+                //var vectors = [];
                 var text = [];
+                var x = [];
+                var y = [];
+                var z = [];
                 
                 <% for (var i = 0; i < locationArray.length; i++) { %>
                     ids.push(<%=locationArray[i].id%>);
-                    vectors.push(new THREE.Vector3(<%=locationArray[i].data.longitude%>, <%=locationArray[i].data.latitude%>, <%=locationArray[i].data.altitude%>));
+                    //vectors.push(new THREE.Vector3(<%=locationArray[i].data.longitude%>, <%=locationArray[i].data.latitude%>, <%=locationArray[i].data.altitude%>));
                     text.push( String('<%=locationArray[i].data.address%>'));
+                    x.push(<%=locationArray[i].data.longitude%>);
+                    y.push(<%=locationArray[i].data.latitude%>);
+                    z.push(<%=locationArray[i].data.altitude%>);
                 <%}%>
-                return {ids: ids, vectors: vectors, statuses: text};
+                return {ids: ids, statuses: text, x: x, y: y, z: z};
             }
             
-            function updateNode(node, newPos, newStatus) {
-                if (vectorsAreDifferent(node.position, newPos)) {
+            function dataGrab(locationArray) {
+				var ids = [];
+                //var vectors = [];
+                var text = [];
+                var x = [];
+                var y = [];
+                var z = [];
+                
+                <% for (var i = 0; i < locationArray.length; i++) { %>
+                    ids.push(<%=locationArray[i].id%>);
+                    //vectors.push(new THREE.Vector3(<%=locationArray[i].data.longitude%>, <%=locationArray[i].data.latitude%>, <%=locationArray[i].data.altitude%>));
+                    text.push( String('<%=locationArray[i].data.address%>'));
+                    x.push(<%=locationArray[i].data.longitude%>);
+                    y.push(<%=locationArray[i].data.latitude%>);
+                    z.push(<%=locationArray[i].data.altitude%>);
+                <%}%>
+                return {ids: ids, statuses: text, x: x, y: y, z: z};
+            }    
+            
+            function updateNode(node, newVectors, newStatus, index) {
+                //console.log("Comparison: ", node.position, newPos);
+                var temp = new THREE.Vector3(newVectors.X[index], newVectors.Y[index], newVectors.Z[index]);
+                if (vectorsAreDifferent(node.position, temp)) {
+                    console.log("Node position changed");
                     node.moving = true;
-                    node.translateDist = calculateVector(node.position, newPos);
-                    //node.position.set(newPos.x, newPos.y, newPos.z);
-                    console.log("newPos: ", node.position.x, node.position.y, node.position.z);
-                    console.log("DistanceTo: ", node.translateDist);
+                    node.translateTarget = temp;
+                    //node.position.set(temp.x, temp.y, temp.z);
+                    // console.log("newPos: ", node.position.x, node.position.y, node.position.z);
+                    // console.log("DistanceTo: ", node.translateDist);
                 }
                 node.text = newStatus;
             }
             
             function updateScene(streamData) {
-                var convertedPositions = normalizeCoordPack(streamData.vectors);
+                console.log(streamData);
+                var convertedPositions = normalizeCoordPack(streamData.x, streamData.y, streamData.z);
+                console.log(convertedPositions);
                 for (var i = 0; i < streamData['ids'].length; i++) {
                     if (!(streamData['ids'][i] in clusterLoop.hashTable)) {
+                        console.log("Done");
                         clusterLoop.newNode(streamData, i);
                     } else {
-                        updateNode(clusterLoop.hashTable[streamData['ids'][i]], convertedPositions[i], streamData.statuses[i]);
+                        //console.log("Conversions", convertedPositions[i], streamData['ids'][i], streamData['vectors'][i]);
+                        updateNode(clusterLoop.hashTable[streamData['ids'][i]], convertedPositions, streamData.statuses[i], i);
                     }
                 }
             }
@@ -162,7 +244,8 @@
             }
             function render() {
                 updateSize();
-                
+                transformCameraLoop();
+                transformNodes();
                 for (var i = 0; i < views.length; i++) {
                     var view = views[i];
                     var camera = view.camera;
@@ -178,21 +261,36 @@
 
 					camera.aspect = width / height;
 					camera.updateProjectionMatrix();
-
+					
+					//camera.lookAt(cameraController.position);
+					
                     renderer.render(scene, camera);
                 }
             }
             
-            setInterval(function() {
-                $.ajax({
-                    url: "/locationdata",
-                    type: 'GET',
-                    success: function(res) {
-                        updateScene(dataGrab(res));
-                        if (updateDelay == 1000) updateDelay = 10000;
-                    }
-                });
-            }, updateDelay);
+                setInterval(function() {
+                    $.ajax({
+                        url: "/locationdata",
+                        type: 'GET',
+                        success: function(resData) {
+                            var ids = [];
+                            var text = [];
+                            var x = [];
+                            var y = [];
+                            var z = [];
+                            
+                            for (var i = 0; i < resData.length; i++) {
+                                ids.push(resData[i].id);
+                                text.push( String(resData[i].data.address));
+                                x.push(resData[i].data.longitude);
+                                y.push(resData[i].data.latitude);
+                                z.push(resData[i].data.altitude);
+                            }
+                            var streamData = {ids: ids, statuses: text, x: x, y: y, z: z};
+                            updateScene(streamData);
+                        }
+                    });
+                }, 5000);
         </script>
     </body>
 </html>

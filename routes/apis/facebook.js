@@ -71,28 +71,36 @@ router.post("/statusupdate", function(request, response){
     
     graph.setAccessToken(token);
     
+    var statusString = '';
+    
     if (status == 0){
-        var dataObj = {
-            ['status'] : "Needs Assistance",
-        }
+        statusString = 'Needs Assistance';
     } else if (status == 1){
-        var dataObj = {
-            ['status'] : "Safe",
-        }
+        statusString = 'Safe';
     }
-    db.ref('/users/').update({[id] : dataObj}).then(function(snapshot){
-        console.log('yuh3')
-        response.send({id : id, msg : "Hang on " + username + ". First responders are on their way."});
-    }, function(error){
-        if(error){
-            response.send(Error(error));
-        }
+    db.ref('/users/' + id + '/').update({'status' : statusString}).then(function(napshot){
+        db.ref('/users/' + id + '/location').once('value').then(function(snapshot){
+            var msg = username + " Status Update : In need of help. \n Address : " + snapshot.val().address + ". \n Latitude : " + snapshot.val().latitude + ".\n Longitude :  " + snapshot.val().longitude + ".\n Altitude : " + snapshot.val().altitude;
+            var wallPost = {
+              message: msg
+            }
+            graph.post("/feed/?privacy={'value':'SELF'}", wallPost, function(err, res) {
+                if(err){
+                    console.log(err);
+                    response.send(Error(err));
+                    return
+                } else {
+                    // returns the post id 
+                    console.log(res); // { id: xxxxx} 
+                    response.send({id : id, msg : "Hang on " + username + ". First responders are on their way."});
+                }
+            });
+        }, function(error){
+            if(error){
+                response.send(Error(error));
+            }
+        });
     });
-});
-
-router.post("/leapmotion", function(request, response){
-    console.log(request.data);
-    response.send("csaba");
 });
 
 module.exports = router;

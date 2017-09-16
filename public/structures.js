@@ -10,9 +10,10 @@ ClusterLoop.prototype.validateCenter = function() {
 }
 
 ClusterLoop.prototype.newNode = function(streamData, index) {
-    var vectorLoc = normalizeCoordPack(streamData.vectors)[index];
+    var temp = normalizeCoordPack(streamData.x, streamData.y, streamData.z);
+    var vectorLoc = new THREE.Vector3(temp.X[index], temp.Y[index], temp.Z[index]);
     var cluster;
-    console.log(this);
+    console.log("Created new node", this);
     if (!this.head) {
         cluster = this.newCluster(new THREE.Object3D(), new NodeNetwork(), new THREE.MeshBasicMaterial({color: 0x00ff00}));
     } else {
@@ -72,7 +73,7 @@ NodeNetwork.prototype.push = function(input, clusterLoop) {
         prev: null,
         position: input.mesh.position,
         moving: false,
-        translateDist: new THREE.Vector3(0, 0, 0),
+        translateTarget: new THREE.Vector3(0, 0, 0),
         mesh: input.mesh,
         id: input.id,
         text: input.text
@@ -97,7 +98,7 @@ NodeNetwork.prototype.push = function(input, clusterLoop) {
     clusterLoop.nodeNum += 1;
 }
 NodeNetwork.prototype.newNode = function(vectorLoc, cluster, text, id, clusterLoop) {
-    var geom = new THREE.SphereGeometry(nodePolygons, nodePolygons);
+    var geom = new THREE.SphereGeometry(nodePolygons, nodePolygons, nodePolygons);
     //var node = new THREE.Mesh(geom, cluster.material);
     var node = new THREE.Mesh(geom);
     node.scale.set(nodeScale, nodeScale, nodeScale);

@@ -39,10 +39,6 @@ app.use(facebookRoute);
 app.use(locationRoute);
 app.use(modelRoute);
 
-app.get('/', function(request, response){
-   console.log('XD'); 
-});
-
 app.get('*', function(request, response){
     response.send(":(");
 });
