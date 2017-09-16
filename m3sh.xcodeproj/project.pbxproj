@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		344C044B1F6CE452008F4A9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044A1F6CE452008F4A9B /* AppDelegate.swift */; };
 		344C044D1F6CE452008F4A9B /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044C1F6CE452008F4A9B /* LocationViewController.swift */; };
-		344C044F1F6CE452008F4A9B /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044E1F6CE452008F4A9B /* SecondViewController.swift */; };
+		344C044F1F6CE452008F4A9B /* MeshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044E1F6CE452008F4A9B /* MeshViewController.swift */; };
 		344C04521F6CE452008F4A9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 344C04501F6CE452008F4A9B /* Main.storyboard */; };
 		344C04541F6CE452008F4A9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 344C04531F6CE452008F4A9B /* Assets.xcassets */; };
 		344C04571F6CE452008F4A9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 344C04551F6CE452008F4A9B /* LaunchScreen.storyboard */; };
 		344C045F1F6CF661008F4A9B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C045E1F6CF661008F4A9B /* LoginViewController.swift */; };
 		344C04621F6CFA49008F4A9B /* InternetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C04611F6CFA49008F4A9B /* InternetManager.swift */; };
+		344C04641F6D2124008F4A9B /* Peer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C04631F6D2124008F4A9B /* Peer.swift */; };
+		344C04661F6D217E008F4A9B /* PeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C04651F6D217E008F4A9B /* PeerManager.swift */; };
 		D52C05CCC18C92B76A8CA8E5 /* Pods_m3sh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBC5820CEDEA6299D0DDAA1F /* Pods_m3sh.framework */; };
 /* End PBXBuildFile section */
 
@@ -22,13 +24,15 @@
 		344C04471F6CE452008F4A9B /* m3sh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = m3sh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		344C044A1F6CE452008F4A9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		344C044C1F6CE452008F4A9B /* LocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
-		344C044E1F6CE452008F4A9B /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		344C044E1F6CE452008F4A9B /* MeshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshViewController.swift; sourceTree = "<group>"; };
 		344C04511F6CE452008F4A9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		344C04531F6CE452008F4A9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		344C04561F6CE452008F4A9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		344C04581F6CE452008F4A9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		344C045E1F6CF661008F4A9B /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		344C04611F6CFA49008F4A9B /* InternetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetManager.swift; sourceTree = "<group>"; };
+		344C04631F6D2124008F4A9B /* Peer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Peer.swift; sourceTree = "<group>"; };
+		344C04651F6D217E008F4A9B /* PeerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerManager.swift; sourceTree = "<group>"; };
 		4A69701BACFEF285445F3E52 /* Pods-m3sh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-m3sh.debug.xcconfig"; path = "Pods/Target Support Files/Pods-m3sh/Pods-m3sh.debug.xcconfig"; sourceTree = "<group>"; };
 		B13171F212B1EECEDB173996 /* Pods-m3sh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-m3sh.release.xcconfig"; path = "Pods/Target Support Files/Pods-m3sh/Pods-m3sh.release.xcconfig"; sourceTree = "<group>"; };
 		BBC5820CEDEA6299D0DDAA1F /* Pods_m3sh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_m3sh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,7 +75,7 @@
 				344C044A1F6CE452008F4A9B /* AppDelegate.swift */,
 				344C045E1F6CF661008F4A9B /* LoginViewController.swift */,
 				344C044C1F6CE452008F4A9B /* LocationViewController.swift */,
-				344C044E1F6CE452008F4A9B /* SecondViewController.swift */,
+				344C044E1F6CE452008F4A9B /* MeshViewController.swift */,
 				344C04501F6CE452008F4A9B /* Main.storyboard */,
 				344C04531F6CE452008F4A9B /* Assets.xcassets */,
 				344C04551F6CE452008F4A9B /* LaunchScreen.storyboard */,
@@ -84,6 +88,8 @@
 			isa = PBXGroup;
 			children = (
 				344C04611F6CFA49008F4A9B /* InternetManager.swift */,
+				344C04631F6D2124008F4A9B /* Peer.swift */,
+				344C04651F6D217E008F4A9B /* PeerManager.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -230,8 +236,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				344C045F1F6CF661008F4A9B /* LoginViewController.swift in Sources */,
-				344C044F1F6CE452008F4A9B /* SecondViewController.swift in Sources */,
+				344C044F1F6CE452008F4A9B /* MeshViewController.swift in Sources */,
+				344C04661F6D217E008F4A9B /* PeerManager.swift in Sources */,
 				344C044B1F6CE452008F4A9B /* AppDelegate.swift in Sources */,
+				344C04641F6D2124008F4A9B /* Peer.swift in Sources */,
 				344C04621F6CFA49008F4A9B /* InternetManager.swift in Sources */,
 				344C044D1F6CE452008F4A9B /* LocationViewController.swift in Sources */,
 			);

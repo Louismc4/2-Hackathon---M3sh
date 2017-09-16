@@ -98,11 +98,11 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
                     UserDefaults.standard.set(fb_email, forKey: "email")
                     UserDefaults.standard.set(fb_name, forKey: "username")
                     UserDefaults.standard.set(auth_Token, forKey: "token")
+                    UserDefaults.standard.set(1, forKey: "status")
                     var data = ["id" : fb_id, "email": fb_email, "username": fb_name, "token": auth_Token]
                     self.facebookHTTPPost(params: data)
                 }
             }
-            
         }
     }
     
@@ -135,7 +135,6 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
             
             UserDefaults.standard.set(1, forKey: "fetch")
             self.performSegue(withIdentifier: "seguetomain", sender: self)
-            
         }
         task.resume()
     }

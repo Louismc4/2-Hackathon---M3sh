@@ -10,7 +10,13 @@ import UIKit
 import CoreLocation
 import FBSDKLoginKit
 
+let LocationController = LocationViewController()
+
 class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSDKLoginButtonDelegate {
+    
+    class var LocationControllerInstance : LocationViewController {
+        return LocationController
+    }
 
     let locationManager = CLLocationManager()
         
@@ -19,6 +25,10 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
         button.readPermissions = ["public_profile", "email"]
         return button
     }()
+    
+    
+    @IBOutlet weak var labOutlet: UILabel!
+    @IBOutlet weak var safetySegment: UISegmentedControl!
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,10 +52,14 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
             }
         }
     }
-        
+    
+    override func viewDidAppear(_ animated: Bool) {
+        UserDefaults.standard.set(1, forKey: "status")
+        safetySegment.selectedSegmentIndex = 1
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
         
     @IBAction func start(_ sender: Any) {
@@ -114,12 +128,112 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
             
             let responseString = String(data: data, encoding: .utf8)
             print("responseString = \(responseString)")
-            
-//            UIAlertView(title: "Status",
-//                message: responseString!,
-//                delegate: nil,
-//                cancelButtonTitle: "OK").show()
         }
         task.resume()
+    }
+
+    @IBAction func setSafetySettings(_ sender: UISegmentedControl) {
+        switch(sender.selectedSegmentIndex){
+        case 0:
+            UserDefaults.standard.set(0, forKey: "status")
+            if let auth_Token = UserDefaults.standard.object(forKey: "token") as? String {
+                if(auth_Token != ""){
+                    if let id = UserDefaults.standard.object(forKey: "id") as? String {
+                        if(id != ""){
+                            var data = ["id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 0]
+                            if(InternetManager.internetManager.isInternetAvailable()){
+                                self.safetyPost(params: data)
+                            } else {
+                                PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
+                            }
+                        }
+                    }
+                }
+            }
+        case 1:
+            UserDefaults.standard.set(1, forKey: "status")
+            if let auth_Token = UserDefaults.standard.object(forKey: "token") as? String {
+                if(auth_Token != ""){
+                    if let id = UserDefaults.standard.object(forKey: "id") as? String {
+                        if(id != ""){
+                            var data = ["id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 1]
+                            if(InternetManager.internetManager.isInternetAvailable()){
+                                self.safetyPost(params: data)
+                            } else {
+                                print("no internet")
+                                PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
+                            }
+                        }
+                    }
+                }
+            }
+        default : break
+        }
+    }
+    
+    func safetyPost(params: [String:Any]) {
+        var request = URLRequest(url: URL(string: "https://m3sh-louismc4.c9users.io/statusupdate")!)
+        request.httpMethod = "POST"
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
+            request.httpBody = jsonData
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                // check for fundamental networking error
+                print("error=\(error)")
+                return
+            }
+            
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 { // check for http errors
+                print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(response)")
+            }
+            
+            let responseString = String(data: data, encoding: .utf8)
+            print("responseString = \(responseString)")
+            
+            let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: [])
+            
+            if let resp = (jsonResponse as! NSDictionary)["id"] as? String {
+                if resp == UserDefaults.standard.object(forKey: "id") as? String {
+                    if let respMsg = (jsonResponse as! NSDictionary)["msg"] as? String {
+                        DispatchQueue.main.async() {
+                            let alert: UIAlertView = UIAlertView()
+                            alert.delegate = self
+                            
+                            alert.title = "Alert"
+                            alert.message = respMsg
+                            alert.addButton(withTitle: "Ok")
+                            alert.show()
+                            self.dismiss(animated: true, completion: {});
+                        }
+                    }
+                } else {
+                    print("yuh5")
+                    print(jsonResponse)
+                    var data = ["id" : (jsonResponse as! NSDictionary)["id"] as? String, "msg" : (jsonResponse as! NSDictionary)["msg"] as? String]
+                    PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func showMsg(msg : String){
+        DispatchQueue.main.async(){
+            let alert: UIAlertView = UIAlertView()
+            alert.delegate = self
+        
+            alert.title = "Alert"
+            alert.message = msg
+            alert.addButton(withTitle: "Ok")
+            alert.show()
+            self.dismiss(animated: true, completion: {});
+        }
     }
 }
