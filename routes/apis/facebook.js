@@ -39,10 +39,10 @@ router.post("/facebook", function(request, response){
                     ['email'] : email,
                     ['username'] : username,
                     ['picture'] : picture,
+                    ['status'] : "Safe",
                     ['auth_token'] : token
                 }
                 db.ref('/users/').update({[id] : dataObj}).then(function(snapshot){
-                    response.send("Success!");
                 }, function(error){
                     if(error){
                         response.send(Error(error));
@@ -53,8 +53,45 @@ router.post("/facebook", function(request, response){
     });
 });
 
-router.get("/leapmotion", function(request, response){
-    console.log(request.body);
+router.post("/statusupdate", function(request, response){
+    var outerKey = '';
+    var id = '';
+    var username = '';
+    var status = 0;
+    var token = '';
+    
+    for(var key in request.body){
+        outerKey = JSON.parse(key);
+    }
+    
+    id = outerKey['id'];
+    username = outerKey['username'];
+    status = outerKey['status'];
+    token = outerKey['token'];
+    
+    graph.setAccessToken(token);
+    
+    if (status == 0){
+        var dataObj = {
+            ['status'] : "Needs Assistance",
+        }
+    } else if (status == 1){
+        var dataObj = {
+            ['status'] : "Safe",
+        }
+    }
+    db.ref('/users/').update({[id] : dataObj}).then(function(snapshot){
+        console.log('yuh3')
+        response.send({id : id, msg : "Hang on " + username + ". First responders are on their way."});
+    }, function(error){
+        if(error){
+            response.send(Error(error));
+        }
+    });
+});
+
+router.post("/leapmotion", function(request, response){
+    console.log(request.data);
     response.send("csaba");
 });
 

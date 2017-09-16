@@ -3,28 +3,73 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel ="stylesheet" type="text/css" href="../stylesheets/3DModel.css">
         <style>
-            
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+				color: #0080ff;
+			}
         </style>
     </head>
     <body>
         <div id="container"></div>
         <script>
-            var scene, cameraController, renderer, clusterLoop;
-            
+            var scene, cameraController, renderer, clusterLoop, windowWidth, windowHeight;
+            var currentFocus = null, nodeSelected = false;
+            var cameraMoving = false, cameraControlTarget = new THREE.Vector3(0,0,0);
             var nodePolygons = 64;
             var nodeScale = 0.25;
+            var sceneRadius = 500;
+            var updateDelay = 1000;
             
             var views = [
+                    {
+                        left: 0,
+                        top: 0.55,
+                        width: 0.325,
+                        height: 0.5,
+                        background: new THREE.Color(0, 0, 0),
+                        eye: [1800, 0, 0],
+                        up: [0, 1, 0],
+                        rotation: [90, 0, 0],
+                        fov: 45
+                    },
                     {
                         left: 0.325,
                         top: 0,
                         width: 0.35,
                         height: 0.5,
-                        background: new THREE.Color(1, 1, 1),
+                        background: new THREE.Color(0, 0, 0),
                         eye: [0, 1800, 0],
-                        top: [0, 0, 1],
+                        up: [0, 0, 1],
                         rotation: [0, 0, 0],
+                        fov: 45
+                    },
+                    {
+                        left: 0.675,
+                        top: 0.55,
+                        width: 0.35,
+                        height: 0.5,
+                        background: new THREE.Color(0, 0, 0),
+                        eye: [-1800, 0, 0],
+                        up: [0, 1, 0],
+                        rotation: [-90, 0, 0],
                         fov: 45
                     }
                 ];
@@ -43,7 +88,7 @@
             	
             	// init cameras
             	for (var i = 0; i < views.length; i++) {
-            		var view = views[ii];
+            		var view = views[i];
             		var camera = new THREE.PerspectiveCamera(view.fov, window.innerWidth/window.innerHeight, 1, 10000);	
             		camera.position.fromArray(view.eye);	
             		camera.up.fromArray(view.up);	
@@ -60,66 +105,80 @@
             	container.appendChild(renderer.domElement);
             	
             	clusterLoop = new ClusterLoop();
+            	clusterLoop.validateCenter();
+            	currentFocus = clusterLoop;
+            	
+            	document.addEventListener( 'mousedown', onDocumentMouseDown );
+            	document.addEventListener( 'keydown', onGetKeyDown );
             }
             
-            function dataGrab(datStream) {
+            function dataGrab(locationArray) {
                 var ids = [];
                 var vectors = [];
                 var text = [];
                 
-                for (var i = 0; i < datStream.length; i++) {
-                    ids.push(datStream[i].id);
-                    vectors.push(new THREE.Vector3(datStream[i].longitude, datStream[i].latitude, datStream[i].altitude));
-                    text.push( String(datStream[i].address));
-                }
-                return {ids: ids, vectors: vectors: statuses: text};
+                <% for (var i = 0; i < locationArray.length; i++) { %>
+                    ids.push(<%=locationArray[i].id%>);
+                    vectors.push(new THREE.Vector3(<%=locationArray[i].data.longitude%>, <%=locationArray[i].data.latitude%>, <%=locationArray[i].data.altitude%>));
+                    text.push( String('<%=locationArray[i].data.address%>'));
+                <%}%>
+                return {ids: ids, vectors: vectors, statuses: text};
             }
             
-            function normalizeCoordPack(coordPack) {
-                var topBound = null, bottomBound = null, rightBound = null, leftBound = null, frontBound = null, backBound = null;
-                var normalStretch = 500;
-                for (var i = 0; i < coordPack.length; i++) {
-                    if (coordPack[i].x > leftBound || leftBound == null) leftBound = coordPack[i].x;
-                    if (coordPack[i].x < rightBound || rightBound == null) rightBound = coordPack[i].x;
-                    if (coordPack[i].y > frontBound || frontBound == null) frontBound = coordPack[i].y;
-                    if (coordPack[i].y < backBound || backBound == null) backBound = coordPack[i].y;
-                    if (coordPack[i].z > topBound || topBound == null) topBound = coordPack[i].z;
-                    if (coordPack[i].z < bottomBound || bottomBound == null) bottomBound = coordPack[i].z;
+            function updateNode(node, newPos, newStatus) {
+                if (vectorsAreDifferent(node.position, newPos)) {
+                    node.moving = true;
+                    node.translateDist = calculateVector(node.position, newPos);
+                    //node.position.set(newPos.x, newPos.y, newPos.z);
+                    console.log("newPos: ", node.position.x, node.position.y, node.position.z);
+                    console.log("DistanceTo: ", node.translateDist);
                 }
-                var vertLength = topBound - bottomBound;
-                var horiLength = leftBound - rightBound;
-                var depthLength = frontBound - backBound;
-                for (var i = 0; i < coordPack.length; i++) {
-                    coordPack[i].x = (Math.abs(coordPack[i].x - rightBound) / horiLength)*normalStretch;
-                    coordPack[i].y = (Math.abs(coordPack[i].y - backBound) / depthLength)*normalStretch;
-                    coordPack[i].z = (Math.abs(coordPack[i].z - bottomBound) / vertLength)*normalStretch;
-                }
-                return coordPack;
-            }
-            
-            function updateNode(node, newData) {
-                var convertedPosition = normalizeCoordPack(newData.vectors);
-                if (vectorsAreDifferent(node.position, ))
+                node.text = newStatus;
             }
             
             function updateScene(streamData) {
-                for (var i = 0; i < streamData.id.length; i++) {
-                    if (!(streamData.id[i] in clusterLoop.hashTable)) {
-                        clusterLoop.newNode(streamData);
+                var convertedPositions = normalizeCoordPack(streamData.vectors);
+                for (var i = 0; i < streamData['ids'].length; i++) {
+                    if (!(streamData['ids'][i] in clusterLoop.hashTable)) {
+                        clusterLoop.newNode(streamData, i);
                     } else {
-                        updateNode(clusterLoop.hashTable[streamData.id[i]], streamData.vectors[i], streamData.statuses[i]);
+                        updateNode(clusterLoop.hashTable[streamData['ids'][i]], convertedPositions[i], streamData.statuses[i]);
                     }
                 }
             }
+            
+			function updateSize() {
+				if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
+					windowWidth  = window.innerWidth;
+					windowHeight = window.innerHeight;
+					renderer.setSize ( windowWidth, windowHeight );
+				}
+			}
+
             
             function renderLoop() {
                 render();
                 requestAnimationFrame(renderLoop);
             }
             function render() {
+                updateSize();
+                
                 for (var i = 0; i < views.length; i++) {
                     var view = views[i];
                     var camera = view.camera;
+					var left   = Math.floor( windowWidth  * view.left );
+					var top    = Math.floor( windowHeight * view.top );
+					var width  = Math.floor( windowWidth  * view.width );
+					var height = Math.floor( windowHeight * view.height );
+
+					renderer.setViewport( left, top, width, height );
+					renderer.setScissor( left, top, width, height );
+					renderer.setScissorTest( true );
+					renderer.setClearColor( view.background );
+
+					camera.aspect = width / height;
+					camera.updateProjectionMatrix();
+
                     renderer.render(scene, camera);
                 }
             }
@@ -130,9 +189,10 @@
                     type: 'GET',
                     success: function(res) {
                         updateScene(dataGrab(res));
+                        if (updateDelay == 1000) updateDelay = 10000;
                     }
                 });
-            }), 10000);
+            }, updateDelay);
         </script>
     </body>
 </html>

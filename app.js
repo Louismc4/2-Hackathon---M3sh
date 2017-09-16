@@ -31,11 +31,13 @@ admin.initializeApp({
 //0Routes---------------------------------------------------------------------->
 var indexRoute = require('./routes/main/index'),
     facebookRoute = require('./routes/apis/facebook'),
-    locationRoute = require('./routes/apis/location');
+    locationRoute = require('./routes/apis/location'),
+    modelRoute    = require('./routes/3dmodel/3dmodel');
 
 app.use(indexRoute);
 app.use(facebookRoute);
 app.use(locationRoute);
+app.use(modelRoute);
 
 app.get('/', function(request, response){
    console.log('XD'); 

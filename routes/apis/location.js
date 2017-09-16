@@ -34,7 +34,13 @@ router.post('/location', function(request, response){
                         ['altitude'] : altitude, ['address'] : data.results[0].formatted_address}).then(function(snapshot){
                             db.ref('/locations/' + id).update({['latitude'] : latitude, ['longitude'] : longitude, 
                             ['altitude'] : altitude, ['address'] : data.results[0].formatted_address}).then(function(snapshot){
-                                response.send("We are sending help your way!");
+                                db.ref('/users/' + id + '/username/').once('value').then(function(snapshot){
+                                    response.send("Success!");
+                                }, function(error){
+                                    if(error){
+                                        response.send(Error("Error Reading Name From Database!"));
+                                    } 
+                                });
                             }, function(error){
                                 if(error){
                                     response.send(Error("Error Writing To Database!"));
