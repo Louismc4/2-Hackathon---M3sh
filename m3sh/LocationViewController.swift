@@ -79,14 +79,19 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
             let currentLocation = CLLocationCoordinate2D(latitude: locations.last!.coordinate.latitude, longitude:
                 locations.last!.coordinate.longitude)
             let altitude = locations.last!.altitude
-                
+
             if let idvalue = UserDefaults.standard.object(forKey: "id") as? String {
                 let data : [String:Any] = [
+                    "type" : "location",
                     "id" : idvalue,
                     "latitude" : currentLocation.latitude,
                     "longitude" : currentLocation.longitude,
                     "altitude" : altitude]
-                self.locationPost(params: data)
+                if(InternetManager.internetManager.isInternetAvailable()){
+                    self.locationPost(params: data)
+                } else {
+                    PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
+                }
             }
         }
     }
@@ -140,7 +145,7 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
                 if(auth_Token != ""){
                     if let id = UserDefaults.standard.object(forKey: "id") as? String {
                         if(id != ""){
-                            var data = ["id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 0]
+                            var data = ["type" : "safe", "id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 0]
                             if(InternetManager.internetManager.isInternetAvailable()){
                                 self.safetyPost(params: data)
                             } else {
@@ -198,7 +203,7 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
             print("responseString = \(responseString)")
             
             let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: [])
-            
+            print(jsonResponse)
             if let resp = (jsonResponse as! NSDictionary)["id"] as? String {
                 if resp == UserDefaults.standard.object(forKey: "id") as? String {
                     if let respMsg = (jsonResponse as! NSDictionary)["msg"] as? String {
@@ -215,7 +220,6 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
                     }
                 } else {
                     print("yuh5")
-                    print(jsonResponse)
                     var data = ["id" : (jsonResponse as! NSDictionary)["id"] as? String, "msg" : (jsonResponse as! NSDictionary)["msg"] as? String]
                     PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
                 }

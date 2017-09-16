@@ -9,6 +9,8 @@
 import Foundation
 import MultipeerConnectivity
 
+var from_Peer : MCPeerID?
+
 class Peer : NSObject, MCSessionDelegate {
     
     var peerID : MCPeerID
@@ -27,10 +29,18 @@ class Peer : NSObject, MCSessionDelegate {
     
     func sessionSendData(_ data: Data)
     {
+        print(from_Peer)
         var error: NSError?
+        
+        var peersToSendTo : [MCPeerID] = []
+        for peer in self.session.connectedPeers{
+            if peer != from_Peer {
+                peersToSendTo.append(peer)
+            }
+        }
         do {
-            try self.session.send(data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
-            print("SENT PEER.swift")
+            try self.session.send(data, toPeers: peersToSendTo, with: MCSessionSendDataMode.reliable)
+            from_Peer = nil
         } catch {
             print(error)
         }
@@ -55,21 +65,32 @@ class Peer : NSObject, MCSessionDelegate {
         print("didReceiveData")
         let dictionary: Dictionary? = NSKeyedUnarchiver.unarchiveObject(with: data) as! [String : Any]
         if let resp = (dictionary as! NSDictionary)["id"] as? String {
-            print("yuh")
-            if resp == UserDefaults.standard.object(forKey: "id") as? String {
-                print("yuh1")
-                if let respMsg = (dictionary as! NSDictionary)["msg"] as? String {
-                    print("yuh2")
-                    LocationViewController.LocationControllerInstance.showMsg(msg : respMsg)
+            if let type = (dictionary as! NSDictionary)["type"] as? String {
+                if type == "location" {
+                    if(InternetManager.internetManager.isInternetAvailable()){
+                        print("LOLOLOLOLOL")
+                        LocationViewController.LocationControllerInstance.locationPost(params: dictionary!)
+                    } else {
+                        PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
+                    }
                 }
             } else {
-                if(InternetManager.internetManager.isInternetAvailable()){
-                    print("yuh3")
-                    print(dictionary)
-                    LocationViewController.LocationControllerInstance.safetyPost(params: dictionary!)
+                if resp == UserDefaults.standard.object(forKey: "id") as? String {
+                    print("yuh1")
+                    if let respMsg = (dictionary as! NSDictionary)["msg"] as? String {
+                        print("yuh2")
+                        LocationViewController.LocationControllerInstance.showMsg(msg : respMsg)
+                    }
                 } else {
-                    print("yuh4")
-                    PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
+                    if(InternetManager.internetManager.isInternetAvailable()){
+                        print("yuh3")
+                        print(dictionary)
+                        LocationViewController.LocationControllerInstance.safetyPost(params: dictionary!)
+                    } else {
+                        print("yuh4")
+                        from_Peer = peerID
+                        PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
+                    }
                 }
             }
         }

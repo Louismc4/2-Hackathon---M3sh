@@ -30,7 +30,9 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         if let token = FBSDKAccessToken.current() {
+            print(token)
             if let value = UserDefaults.standard.object(forKey: "token") as? String {
+                print(value)
                 self.performSegue(withIdentifier: "seguetomain", sender: self)
             }
         }
@@ -43,10 +45,9 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         if(InternetManager.internetManager.isInternetAvailable()){
-            if let value = UserDefaults.standard.object(forKey: "fetch") as? Int {
-                if value == 0 {
-                    fetchProfile()
-                }
+            let value = UserDefaults.standard.object(forKey: "fetch") as? Int ?? 0
+            if value == 0 {
+                fetchProfile()
             }
         }
     }
@@ -133,10 +134,12 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
             
             print("responseString = \(responseString)")
             
+        }
+        task.resume()
+        DispatchQueue.main.async {
             UserDefaults.standard.set(1, forKey: "fetch")
             self.performSegue(withIdentifier: "seguetomain", sender: self)
         }
-        task.resume()
     }
     
     //Unwind from the other page
@@ -144,4 +147,3 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
         print("Unwinded from something!")
     }
 }
-
