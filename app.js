@@ -29,16 +29,19 @@ admin.initializeApp({
 //0Middleware------------------------------------------------------------------>
 
 //0Routes---------------------------------------------------------------------->
-var indexRoute = require('./routes/main/index');
+var indexRoute = require('./routes/main/index'),
+    facebookRoute = require('./routes/apis/facebook'),
+    locationRoute = require('./routes/apis/location');
 
 app.use(indexRoute);
+app.use(facebookRoute);
+app.use(locationRoute);
 
 app.get('/', function(request, response){
    console.log('XD'); 
 });
 
 app.get('*', function(request, response){
-    console.log('LOL');
     response.send(":(");
 });
 

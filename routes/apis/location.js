@@ -30,9 +30,9 @@ router.post('/location', function(request, response){
                 response.send("Geocoding Error!");
             } else {
                 if(data.results[0] != undefined){
-                    db.ref('/users/' + id + '/location/').set({['latitude'] : latitude, ['longitude'] : longitude, 
+                    db.ref('/users/' + id + '/location/').update({['latitude'] : latitude, ['longitude'] : longitude, 
                         ['altitude'] : altitude, ['address'] : data.results[0].formatted_address}).then(function(snapshot){
-                            db.ref('/locations/' + id).set({['latitude'] : latitude, ['longitude'] : longitude, 
+                            db.ref('/locations/' + id).update({['latitude'] : latitude, ['longitude'] : longitude, 
                             ['altitude'] : altitude, ['address'] : data.results[0].formatted_address}).then(function(snapshot){
                                 response.send("We are sending help your way!");
                             }, function(error){

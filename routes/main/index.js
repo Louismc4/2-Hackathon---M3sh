@@ -3,7 +3,7 @@ var express = require('express'),
 
 //Main Page Routes
 router.get("/", function(request, response){
-    // response.render("../views/main/index");
+    response.render("../views/main/index");
 });
 
 module.exports = router;

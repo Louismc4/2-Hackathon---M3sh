@@ -1,3 +1,5 @@
+<% include ../partials/headermodel.ejs %>
+
 <html>
     <head>
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -8,12 +10,129 @@
     <body>
         <div id="container"></div>
         <script>
+            var scene, cameraController, renderer, clusterLoop;
+            
+            var nodePolygons = 64;
+            var nodeScale = 0.25;
+            
+            var views = [
+                    {
+                        left: 0.325,
+                        top: 0,
+                        width: 0.35,
+                        height: 0.5,
+                        background: new THREE.Color(1, 1, 1),
+                        eye: [0, 1800, 0],
+                        top: [0, 0, 1],
+                        rotation: [0, 0, 0],
+                        fov: 45
+                    }
+                ];
         
             init();
+            renderLoop();
             
             function init() {
                 // setup threejs scene
+            	var container = document.getElementById('container');
+            	
+            	// init scene controllers
+            	scene = new THREE.Scene();
+            	cameraController = new THREE.Object3D();
+            	scene.add(cameraController);
+            	
+            	// init cameras
+            	for (var i = 0; i < views.length; i++) {
+            		var view = views[ii];
+            		var camera = new THREE.PerspectiveCamera(view.fov, window.innerWidth/window.innerHeight, 1, 10000);	
+            		camera.position.fromArray(view.eye);	
+            		camera.up.fromArray(view.up);	
+            		camera.rotation.fromArray(view.rotation);	
+            		view.camera = camera;
+            		cameraController.add(camera);
+            		camera.lookAt(cameraController.position);
+            	}
+            
+            	// setup renderer
+            	renderer = new THREE.WebGLRenderer({ antialias: true });
+            	renderer.setPixelRatio(window.devicePixelRatio);
+            	renderer.setSize(window.innerWidth, window.innerHeight);
+            	container.appendChild(renderer.domElement);
+            	
+            	clusterLoop = new ClusterLoop();
             }
+            
+            function dataGrab(datStream) {
+                var ids = [];
+                var vectors = [];
+                var text = [];
+                
+                for (var i = 0; i < datStream.length; i++) {
+                    ids.push(datStream[i].id);
+                    vectors.push(new THREE.Vector3(datStream[i].longitude, datStream[i].latitude, datStream[i].altitude));
+                    text.push( String(datStream[i].address));
+                }
+                return {ids: ids, vectors: vectors: statuses: text};
+            }
+            
+            function normalizeCoordPack(coordPack) {
+                var topBound = null, bottomBound = null, rightBound = null, leftBound = null, frontBound = null, backBound = null;
+                var normalStretch = 500;
+                for (var i = 0; i < coordPack.length; i++) {
+                    if (coordPack[i].x > leftBound || leftBound == null) leftBound = coordPack[i].x;
+                    if (coordPack[i].x < rightBound || rightBound == null) rightBound = coordPack[i].x;
+                    if (coordPack[i].y > frontBound || frontBound == null) frontBound = coordPack[i].y;
+                    if (coordPack[i].y < backBound || backBound == null) backBound = coordPack[i].y;
+                    if (coordPack[i].z > topBound || topBound == null) topBound = coordPack[i].z;
+                    if (coordPack[i].z < bottomBound || bottomBound == null) bottomBound = coordPack[i].z;
+                }
+                var vertLength = topBound - bottomBound;
+                var horiLength = leftBound - rightBound;
+                var depthLength = frontBound - backBound;
+                for (var i = 0; i < coordPack.length; i++) {
+                    coordPack[i].x = (Math.abs(coordPack[i].x - rightBound) / horiLength)*normalStretch;
+                    coordPack[i].y = (Math.abs(coordPack[i].y - backBound) / depthLength)*normalStretch;
+                    coordPack[i].z = (Math.abs(coordPack[i].z - bottomBound) / vertLength)*normalStretch;
+                }
+                return coordPack;
+            }
+            
+            function updateNode(node, newData) {
+                var convertedPosition = normalizeCoordPack(newData.vectors);
+                if (vectorsAreDifferent(node.position, ))
+            }
+            
+            function updateScene(streamData) {
+                for (var i = 0; i < streamData.id.length; i++) {
+                    if (!(streamData.id[i] in clusterLoop.hashTable)) {
+                        clusterLoop.newNode(streamData);
+                    } else {
+                        updateNode(clusterLoop.hashTable[streamData.id[i]], streamData.vectors[i], streamData.statuses[i]);
+                    }
+                }
+            }
+            
+            function renderLoop() {
+                render();
+                requestAnimationFrame(renderLoop);
+            }
+            function render() {
+                for (var i = 0; i < views.length; i++) {
+                    var view = views[i];
+                    var camera = view.camera;
+                    renderer.render(scene, camera);
+                }
+            }
+            
+            setInterval(function() {
+                $.ajax({
+                    url: "/locationdata",
+                    type: 'GET',
+                    success: function(res) {
+                        updateScene(dataGrab(res));
+                    }
+                });
+            }), 10000);
         </script>
     </body>
 </html>
