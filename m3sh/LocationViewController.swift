@@ -18,8 +18,8 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
         return LocationController
     }
 
-    let locationManager = CLLocationManager()
-    
+    let locationManager : CLLocationManager = CLLocationManager()
+
     let loginButton : FBSDKLoginButton = {
         let button = FBSDKLoginButton()
         button.readPermissions = ["public_profile", "email"]
@@ -27,7 +27,7 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     }()
     
     @IBOutlet weak var safetySegment: UISegmentedControl!
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.

@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--First-->
+        <!--Report-->
         <scene sceneID="hNz-n2-bh7">
             <objects>
-                <viewController id="9pv-A4-QxB" customClass="LocationViewController" customModule="m3sh" sceneMemberID="viewController">
+                <viewController title="Report" id="9pv-A4-QxB" customClass="LocationViewController" customModule="m3sh" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
@@ -23,21 +23,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Report" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="KQZ-1w-vlD">
-                                <rect key="frame" x="110" y="20" width="158" height="42"/>
+                                <rect key="frame" x="108" y="43" width="158" height="42"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGw-x5-Qpn">
-                                <rect key="frame" x="110" y="145" width="166" height="30"/>
-                                <state key="normal" title="Stop Streaming"/>
-                                <connections>
-                                    <action selector="stop:" destination="9pv-A4-QxB" eventType="touchUpInside" id="yEc-HC-KpG"/>
-                                </connections>
-                            </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1H4-oG-DFD">
-                                <rect key="frame" x="36" y="200" width="302" height="29"/>
+                                <rect key="frame" x="36" y="236" width="302" height="29"/>
                                 <segments>
                                     <segment title="Request Assistance"/>
                                     <segment title="Safe"/>
@@ -47,30 +40,36 @@
                                 </connections>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTo-8A-dAA">
-                                <rect key="frame" x="102" y="91" width="175" height="30"/>
+                                <rect key="frame" x="100" y="113" width="175" height="30"/>
                                 <state key="normal" title="Stream Location"/>
                                 <connections>
                                     <action selector="start:" destination="9pv-A4-QxB" eventType="touchUpInside" id="RjC-M1-Cx5"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGw-x5-Qpn">
+                                <rect key="frame" x="134" y="166" width="106" height="30"/>
+                                <state key="normal" title="Stop Streaming"/>
+                                <connections>
+                                    <action selector="stop:" destination="9pv-A4-QxB" eventType="touchUpInside" id="yEc-HC-KpG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="leading" secondItem="KQZ-1w-vlD" secondAttribute="leading" id="6rh-3s-MUa"/>
-                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="top" secondItem="kTo-8A-dAA" secondAttribute="bottom" constant="24" id="F40-LN-ld0"/>
-                            <constraint firstItem="kTo-8A-dAA" firstAttribute="centerX" secondItem="KQZ-1w-vlD" secondAttribute="centerX" id="IDh-R0-NjM"/>
-                            <constraint firstItem="kTo-8A-dAA" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="86" id="NNN-6z-rR7"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="KQZ-1w-vlD" secondAttribute="trailing" constant="91" id="X7i-Of-IHJ"/>
-                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="Ydv-jY-RAg"/>
-                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="94" id="b2O-QU-K7g"/>
-                            <constraint firstItem="1H4-oG-DFD" firstAttribute="top" secondItem="WGw-x5-Qpn" secondAttribute="bottom" constant="25" id="dJI-EM-Hie"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="WGw-x5-Qpn" secondAttribute="trailing" constant="83" id="jrC-Vd-RZO"/>
-                            <constraint firstItem="kTo-8A-dAA" firstAttribute="top" secondItem="KQZ-1w-vlD" secondAttribute="bottom" constant="29" id="ofF-5L-pQg"/>
-                            <constraint firstItem="1H4-oG-DFD" firstAttribute="centerX" secondItem="tsR-hK-woN" secondAttribute="centerX" id="pHH-Zp-1CP"/>
-                            <constraint firstItem="1H4-oG-DFD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="20" id="qEL-R6-xau"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="centerX" secondItem="tsR-hK-woN" secondAttribute="centerX" id="APK-CE-F6l"/>
+                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="centerX" secondItem="kTo-8A-dAA" secondAttribute="centerX" id="Oxc-1p-Z6r"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="top" secondItem="WGw-x5-Qpn" secondAttribute="bottom" constant="40" id="WQ0-Sz-aMi"/>
+                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="top" secondItem="kTo-8A-dAA" secondAttribute="bottom" constant="23" id="a6Y-Ta-zmz"/>
+                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="23" id="el3-ab-Mgw"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="20" id="kNT-dH-IsH"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="84" id="kdX-Uz-Qjh"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="centerX" secondItem="1H4-oG-DFD" secondAttribute="centerX" id="krj-LU-eY6"/>
+                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="92" id="mQ2-5h-FxF"/>
+                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="centerX" secondItem="kTo-8A-dAA" secondAttribute="centerX" id="sj3-ZQ-RAB"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="top" secondItem="KQZ-1w-vlD" secondAttribute="bottom" constant="28" id="wV6-RV-wDP"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="First" image="first" id="acW-dT-cKf"/>
+                    <tabBarItem key="tabBarItem" title="Report" image="first" id="acW-dT-cKf" userLabel="Main"/>
                     <connections>
                         <outlet property="safetySegment" destination="1H4-oG-DFD" id="Nha-q6-vak"/>
                         <segue destination="KbT-Gt-ODh" kind="unwind" identifier="unwindtologin" unwindAction="unwindLogoutWithUnwindSegue:" id="7ZP-RJ-uM6"/>
@@ -81,10 +80,10 @@
             </objects>
             <point key="canvasLocation" x="749.60000000000002" y="-320.68965517241384"/>
         </scene>
-        <!--Second-->
+        <!--m3sh-->
         <scene sceneID="wg7-f3-ORb">
             <objects>
-                <viewController id="8rJ-Kc-sve" customClass="MeshViewController" customModule="m3sh" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="m3sh" id="8rJ-Kc-sve" customClass="MeshViewController" customModule="m3sh" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
                         <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
@@ -93,34 +92,48 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5Q-fG-5qZ">
-                                <rect key="frame" x="125" y="318" width="125" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M5Q-fG-5qZ">
+                                <rect key="frame" x="118" y="318" width="125" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="125" id="d8k-Rq-TjP"/>
+                                </constraints>
                                 <state key="normal" title="Start Advertising"/>
                                 <connections>
                                     <action selector="startAdvertising:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="h9h-4k-jW7"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTN-UE-IXD">
-                                <rect key="frame" x="110" y="395" width="140" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Stop Advertising"/>
-                                <connections>
-                                    <action selector="stopAdvertising:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="y3O-YG-ozZ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ix-GN-Bkq">
-                                <rect key="frame" x="130" y="222" width="100" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ix-GN-Bkq">
+                                <rect key="frame" x="130" y="235" width="100" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="738-hP-Eh4"/>
+                                </constraints>
                                 <state key="normal" title="Browse"/>
                                 <connections>
                                     <action selector="browse:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="MME-o1-26z"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTN-UE-IXD">
+                                <rect key="frame" x="110" y="395" width="140" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="3aB-Uy-xZ9"/>
+                                </constraints>
+                                <state key="normal" title="Stop Advertising"/>
+                                <connections>
+                                    <action selector="stopAdvertising:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="y3O-YG-ozZ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="LTN-UE-IXD" secondAttribute="bottom" constant="193" id="5w4-1I-ny4"/>
+                            <constraint firstItem="LTN-UE-IXD" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" constant="94" id="Gs6-ML-VXA"/>
+                            <constraint firstItem="M5Q-fG-5qZ" firstAttribute="top" secondItem="8ix-GN-Bkq" secondAttribute="bottom" constant="53" id="QVf-Mr-TiR"/>
+                            <constraint firstItem="M5Q-fG-5qZ" firstAttribute="centerX" secondItem="LTN-UE-IXD" secondAttribute="centerX" id="Xi7-7U-vBo"/>
+                            <constraint firstItem="8ix-GN-Bkq" firstAttribute="centerX" secondItem="M5Q-fG-5qZ" secondAttribute="centerX" id="Y0h-hy-KOx"/>
+                            <constraint firstItem="M5Q-fG-5qZ" firstAttribute="centerY" secondItem="QS5-Rx-YEW" secondAttribute="centerY" id="wjU-hC-3cF"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Second" image="second" id="cPa-gy-q4n"/>
+                    <tabBarItem key="tabBarItem" title="m3sh" image="second" id="cPa-gy-q4n" userLabel="m3sh"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
