@@ -77,7 +77,8 @@ class Peer : NSObject, MCSessionDelegate {
                         print("yuh1")
                         if let respMsg = (dictionary as! NSDictionary)["msg"] as? String {
                             print("yuh2")
-                            LocationViewController.LocationControllerInstance.showMsg(msg : respMsg)
+                            
+                            LocationViewController.LocationControllerInstance.show(msg : respMsg)
                         }
                     } else {
                         if(InternetManager.internetManager.isInternetAvailable()){

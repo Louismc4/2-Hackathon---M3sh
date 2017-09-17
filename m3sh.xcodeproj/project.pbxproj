@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		344602801F6E4A42005A2408 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3446027D1F6E4A42005A2408 /* bg.png */; };
+		344602811F6E4A42005A2408 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 3446027E1F6E4A42005A2408 /* icon.png */; };
+		344602821F6E4A42005A2408 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 3446027F1F6E4A42005A2408 /* splash.png */; };
 		344C044B1F6CE452008F4A9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044A1F6CE452008F4A9B /* AppDelegate.swift */; };
 		344C044D1F6CE452008F4A9B /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044C1F6CE452008F4A9B /* LocationViewController.swift */; };
 		344C044F1F6CE452008F4A9B /* MeshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344C044E1F6CE452008F4A9B /* MeshViewController.swift */; };
@@ -21,6 +24,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3446027D1F6E4A42005A2408 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		3446027E1F6E4A42005A2408 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		3446027F1F6E4A42005A2408 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash.png; sourceTree = "<group>"; };
 		344C04471F6CE452008F4A9B /* m3sh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = m3sh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		344C044A1F6CE452008F4A9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		344C044C1F6CE452008F4A9B /* LocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +84,9 @@
 				344C044E1F6CE452008F4A9B /* MeshViewController.swift */,
 				344C04501F6CE452008F4A9B /* Main.storyboard */,
 				344C04531F6CE452008F4A9B /* Assets.xcassets */,
+				3446027D1F6E4A42005A2408 /* bg.png */,
+				3446027E1F6E4A42005A2408 /* icon.png */,
+				3446027F1F6E4A42005A2408 /* splash.png */,
 				344C04551F6CE452008F4A9B /* LaunchScreen.storyboard */,
 				344C04581F6CE452008F4A9B /* Info.plist */,
 			);
@@ -175,7 +184,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				344C04571F6CE452008F4A9B /* LaunchScreen.storyboard in Resources */,
+				344602811F6E4A42005A2408 /* icon.png in Resources */,
 				344C04541F6CE452008F4A9B /* Assets.xcassets in Resources */,
+				344602801F6E4A42005A2408 /* bg.png in Resources */,
+				344602821F6E4A42005A2408 /* splash.png in Resources */,
 				344C04521F6CE452008F4A9B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

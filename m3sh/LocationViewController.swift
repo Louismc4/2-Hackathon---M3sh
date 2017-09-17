@@ -234,10 +234,11 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
         task.resume()
     }
     
-    func showMsg(msg : String){
+    func show(msg : String){
         DispatchQueue.main.async() {
             let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(action)
             self.present(alert, animated: true, completion: nil)
         }
     }
