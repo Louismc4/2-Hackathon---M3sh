@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,32 +22,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" text="Report" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="KQZ-1w-vlD">
-                                <rect key="frame" x="110" y="28" width="157.5" height="41.5"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Report" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="KQZ-1w-vlD">
+                                <rect key="frame" x="110" y="20" width="158" height="42"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTo-8A-dAA">
-                                <rect key="frame" x="101" y="92" width="175" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Stream Location"/>
-                                <connections>
-                                    <action selector="start:" destination="9pv-A4-QxB" eventType="touchUpInside" id="RjC-M1-Cx5"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGw-x5-Qpn">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WGw-x5-Qpn">
                                 <rect key="frame" x="110" y="145" width="166" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Stop Streaming"/>
                                 <connections>
                                     <action selector="stop:" destination="9pv-A4-QxB" eventType="touchUpInside" id="yEc-HC-KpG"/>
                                 </connections>
                             </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1H4-oG-DFD">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1H4-oG-DFD">
                                 <rect key="frame" x="36" y="200" width="302" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Request Assistance"/>
                                     <segment title="Safe"/>
@@ -55,11 +46,28 @@
                                     <action selector="setSafetySettings:" destination="9pv-A4-QxB" eventType="valueChanged" id="ghp-UA-UC1"/>
                                 </connections>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kTo-8A-dAA">
+                                <rect key="frame" x="102" y="91" width="175" height="30"/>
+                                <state key="normal" title="Stream Location"/>
+                                <connections>
+                                    <action selector="start:" destination="9pv-A4-QxB" eventType="touchUpInside" id="RjC-M1-Cx5"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="centerX" secondItem="KQZ-1w-vlD" secondAttribute="centerX" id="6BV-lF-sBN"/>
-                            <constraint firstAttribute="centerY" secondItem="KQZ-1w-vlD" secondAttribute="centerY" id="exm-UA-ej4"/>
+                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="leading" secondItem="KQZ-1w-vlD" secondAttribute="leading" id="6rh-3s-MUa"/>
+                            <constraint firstItem="WGw-x5-Qpn" firstAttribute="top" secondItem="kTo-8A-dAA" secondAttribute="bottom" constant="24" id="F40-LN-ld0"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="centerX" secondItem="KQZ-1w-vlD" secondAttribute="centerX" id="IDh-R0-NjM"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="86" id="NNN-6z-rR7"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="KQZ-1w-vlD" secondAttribute="trailing" constant="91" id="X7i-Of-IHJ"/>
+                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="Ydv-jY-RAg"/>
+                            <constraint firstItem="KQZ-1w-vlD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="94" id="b2O-QU-K7g"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="top" secondItem="WGw-x5-Qpn" secondAttribute="bottom" constant="25" id="dJI-EM-Hie"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="WGw-x5-Qpn" secondAttribute="trailing" constant="83" id="jrC-Vd-RZO"/>
+                            <constraint firstItem="kTo-8A-dAA" firstAttribute="top" secondItem="KQZ-1w-vlD" secondAttribute="bottom" constant="29" id="ofF-5L-pQg"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="centerX" secondItem="tsR-hK-woN" secondAttribute="centerX" id="pHH-Zp-1CP"/>
+                            <constraint firstItem="1H4-oG-DFD" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="20" id="qEL-R6-xau"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="First" image="first" id="acW-dT-cKf"/>

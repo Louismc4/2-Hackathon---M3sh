@@ -16,6 +16,7 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
     let loginButton : FBSDKLoginButton = {
         let button = FBSDKLoginButton()
         button.readPermissions = ["public_profile", "email"]
+        button.publishPermissions = ["publish_actions"]
         return button
     }()
     
@@ -30,9 +31,7 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         if let token = FBSDKAccessToken.current() {
-            print(token)
             if let value = UserDefaults.standard.object(forKey: "token") as? String {
-                print(value)
                 self.performSegue(withIdentifier: "seguetomain", sender: self)
             }
         }

@@ -12,13 +12,13 @@ import MultipeerConnectivity
 let MeshControllerInstance = MeshViewController()
 
 class MeshViewController : UIViewController, MCBrowserViewControllerDelegate {
-    //MeshDelegate
-    
-    var data : NSMutableArray = []
     
     class var meshInstance : MeshViewController {
         return MeshControllerInstance
     }
+    
+    var data : NSMutableArray = []
+    var browserViewController : MCBrowserViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,12 +33,22 @@ class MeshViewController : UIViewController, MCBrowserViewControllerDelegate {
         
     @IBAction func browse(_ sender: Any) {
         var browserViewController = MCBrowserViewController(serviceType: "Mesh", session: (PeerManager.PeerManagerInstance.peer?.session)!)
-            
+        
         browserViewController.delegate = self
-            
+        
         present(browserViewController, animated: true) {
-            print("Presented Browser")
         }
+    }
+    
+    // MCBrowserViewController Delegate
+    func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController!){
+        browserViewController.dismiss(animated: true) {
+        }
+    }
+    
+    func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController!){
+        browserViewController.dismiss(animated: true,completion: {
+        })
     }
     
     @IBAction func startAdvertising(_ sender: Any) {
@@ -47,20 +57,6 @@ class MeshViewController : UIViewController, MCBrowserViewControllerDelegate {
         
     @IBAction func stopAdvertising(_ sender: Any) {
         PeerManager.PeerManagerInstance.stop()
-    }
-        
-    // MCBrowserViewController Delegate
-    func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController!){
-        browserViewController.dismiss(animated: true) {
-            print("Browser Dismissed")
-        }
-    }
-        
-    func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController!){
-        browserViewController.dismiss(animated: true,completion: {
-            print("Browser Finished")
-//            PeerManager.PeerManagerInstance.sendData()
-        })
     }
 }
 

@@ -19,15 +19,13 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     }
 
     let locationManager = CLLocationManager()
-        
+    
     let loginButton : FBSDKLoginButton = {
         let button = FBSDKLoginButton()
         button.readPermissions = ["public_profile", "email"]
         return button
     }()
     
-    
-    @IBOutlet weak var labOutlet: UILabel!
     @IBOutlet weak var safetySegment: UISegmentedControl!
         
     override func viewDidLoad() {
@@ -70,28 +68,28 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
         locationManager.stopUpdatingLocation()
     }
     
-    var initLocation = CLLocation(latitude: 0, longitude: 0)
-        
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let distanceInMeters = locations.last!.distance(from: initLocation)
-        if(distanceInMeters > 1) {
-            initLocation = locations.last!
-            let currentLocation = CLLocationCoordinate2D(latitude: locations.last!.coordinate.latitude, longitude:
-                locations.last!.coordinate.longitude)
-            let altitude = locations.last!.altitude
-
-            if let idvalue = UserDefaults.standard.object(forKey: "id") as? String {
-                let data : [String:Any] = [
-                    "type" : "location",
-                    "id" : idvalue,
-                    "latitude" : currentLocation.latitude,
-                    "longitude" : currentLocation.longitude,
-                    "altitude" : altitude]
-                if(InternetManager.internetManager.isInternetAvailable()){
-                    self.locationPost(params: data)
-                } else {
-                    PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
+        let currentLocation = CLLocationCoordinate2D(latitude: locations.last!.coordinate.latitude, longitude:
+            locations.last!.coordinate.longitude)
+        let altitude = locations.last!.altitude
+        
+        if let idvalue = UserDefaults.standard.object(forKey: "id") as? String {
+            var data : [String:Any] = [
+                "peers" : "",
+                "type" : "location",
+                "id" : idvalue,
+                "latitude" : currentLocation.latitude,
+                "longitude" : currentLocation.longitude,
+                "altitude" : altitude]
+            if(InternetManager.internetManager.isInternetAvailable()){
+                self.locationPost(params: data)
+            } else {
+                if let idVal = UserDefaults.standard.object(forKey: "id") as? String {
+                    if let dataVal = data["peers"] as? String {
+                        data["peers"] = dataVal + idVal + ","
+                    }
                 }
+                PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
             }
         }
     }
@@ -145,10 +143,15 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
                 if(auth_Token != ""){
                     if let id = UserDefaults.standard.object(forKey: "id") as? String {
                         if(id != ""){
-                            var data = ["type" : "safe", "id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 0]
+                            var data = ["type" : "status", "peers" : "", "id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 0]
                             if(InternetManager.internetManager.isInternetAvailable()){
                                 self.safetyPost(params: data)
                             } else {
+                                if let idVal = UserDefaults.standard.object(forKey: "id") as? String {
+                                    if let dataVal = data["peers"] as? String {
+                                        data["peers"] = dataVal + idVal + ","
+                                    }
+                                }
                                 PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
                             }
                         }
@@ -161,11 +164,15 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
                 if(auth_Token != ""){
                     if let id = UserDefaults.standard.object(forKey: "id") as? String {
                         if(id != ""){
-                            var data = ["id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 1]
+                            var data = ["type" : "status", "peers" : "", "id" : id, "token" : auth_Token, "username" : UserDefaults.standard.object(forKey: "username"), "status": 1]
                             if(InternetManager.internetManager.isInternetAvailable()){
                                 self.safetyPost(params: data)
                             } else {
-                                print("no internet")
+                                if let idVal = UserDefaults.standard.object(forKey: "id") as? String {
+                                    if let dataVal = data["peers"] as? String {
+                                        data["peers"] = dataVal + idVal + ","
+                                    }
+                                }
                                 PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
                             }
                         }
@@ -203,24 +210,23 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
             print("responseString = \(responseString)")
             
             let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: [])
-            print(jsonResponse)
+            
             if let resp = (jsonResponse as! NSDictionary)["id"] as? String {
                 if resp == UserDefaults.standard.object(forKey: "id") as? String {
                     if let respMsg = (jsonResponse as! NSDictionary)["msg"] as? String {
                         DispatchQueue.main.async() {
-                            let alert: UIAlertView = UIAlertView()
-                            alert.delegate = self
-                            
-                            alert.title = "Alert"
-                            alert.message = respMsg
-                            alert.addButton(withTitle: "Ok")
-                            alert.show()
-                            self.dismiss(animated: true, completion: {});
+                            let alert = UIAlertController(title: "Alert", message: respMsg, preferredStyle: UIAlertControllerStyle.alert)
+                            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                         }
                     }
                 } else {
-                    print("yuh5")
-                    var data = ["id" : (jsonResponse as! NSDictionary)["id"] as? String, "msg" : (jsonResponse as! NSDictionary)["msg"] as? String]
+                    var data = ["id" : (jsonResponse as! NSDictionary)["id"] as? String, "msg" : (jsonResponse as! NSDictionary)["msg"] as? String, "peers" : "", "type" : "status"]
+                    if let idVal = UserDefaults.standard.object(forKey: "id") as? String {
+                        if let dataVal = data["peers"] as? String {
+                            data["peers"] = dataVal + idVal + ","
+                        }
+                    }
                     PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: data))
                 }
             }
@@ -229,15 +235,10 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     }
     
     func showMsg(msg : String){
-        DispatchQueue.main.async(){
-            let alert: UIAlertView = UIAlertView()
-            alert.delegate = self
-        
-            alert.title = "Alert"
-            alert.message = msg
-            alert.addButton(withTitle: "Ok")
-            alert.show()
-            self.dismiss(animated: true, completion: {});
+        DispatchQueue.main.async() {
+            let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

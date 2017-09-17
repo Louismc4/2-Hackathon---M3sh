@@ -16,6 +16,7 @@ class InternetManager : NSObject {
     class var internetManager : InternetManager {
         return internetManagerInstance
     }
+    
     //Check if there's an internet connection
     func isInternetAvailable() -> Bool
     {

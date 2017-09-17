@@ -29,18 +29,10 @@ class Peer : NSObject, MCSessionDelegate {
     
     func sessionSendData(_ data: Data)
     {
-        print(from_Peer)
         var error: NSError?
         
-        var peersToSendTo : [MCPeerID] = []
-        for peer in self.session.connectedPeers{
-            if peer != from_Peer {
-                peersToSendTo.append(peer)
-            }
-        }
         do {
-            try self.session.send(data, toPeers: peersToSendTo, with: MCSessionSendDataMode.reliable)
-            from_Peer = nil
+            try self.session.send(data, toPeers: self.session.connectedPeers, with: MCSessionSendDataMode.reliable)
         } catch {
             print(error)
         }
@@ -64,32 +56,38 @@ class Peer : NSObject, MCSessionDelegate {
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         print("didReceiveData")
         let dictionary: Dictionary? = NSKeyedUnarchiver.unarchiveObject(with: data) as! [String : Any]
+        if let peers = (dictionary as! NSDictionary)["peers"] as? String {
+            if let idVal = UserDefaults.standard.object(forKey: "id") as? String {
+                if peers.contains(idVal){
+                    print("BAIL OUT")
+                    return
+                }
+            }
+        }
         if let resp = (dictionary as! NSDictionary)["id"] as? String {
             if let type = (dictionary as! NSDictionary)["type"] as? String {
                 if type == "location" {
                     if(InternetManager.internetManager.isInternetAvailable()){
-                        print("LOLOLOLOLOL")
                         LocationViewController.LocationControllerInstance.locationPost(params: dictionary!)
                     } else {
                         PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
                     }
-                }
-            } else {
-                if resp == UserDefaults.standard.object(forKey: "id") as? String {
-                    print("yuh1")
-                    if let respMsg = (dictionary as! NSDictionary)["msg"] as? String {
-                        print("yuh2")
-                        LocationViewController.LocationControllerInstance.showMsg(msg : respMsg)
-                    }
                 } else {
-                    if(InternetManager.internetManager.isInternetAvailable()){
-                        print("yuh3")
-                        print(dictionary)
-                        LocationViewController.LocationControllerInstance.safetyPost(params: dictionary!)
+                    if resp == UserDefaults.standard.object(forKey: "id") as? String {
+                        print("yuh1")
+                        if let respMsg = (dictionary as! NSDictionary)["msg"] as? String {
+                            print("yuh2")
+                            LocationViewController.LocationControllerInstance.showMsg(msg : respMsg)
+                        }
                     } else {
-                        print("yuh4")
-                        from_Peer = peerID
-                        PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
+                        if(InternetManager.internetManager.isInternetAvailable()){
+                            print("yuh3")
+                            LocationViewController.LocationControllerInstance.safetyPost(params: dictionary!)
+                        } else {
+                            print("yuh4")
+                            from_Peer = peerID
+                            PeerManager.PeerManagerInstance.sendData(data : NSKeyedArchiver.archivedData(withRootObject: dictionary))
+                        }
                     }
                 }
             }
@@ -116,6 +114,5 @@ class Peer : NSObject, MCSessionDelegate {
     func session(_ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: @escaping (Bool) -> Swift.Void){
         print(certificateHandler(true))
     }
-    
 }
 
