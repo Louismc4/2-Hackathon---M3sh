@@ -107,7 +107,7 @@ class LoginViewController : UIViewController, FBSDKLoginButtonDelegate {
     }
     
     func facebookHTTPPost(params: [String:Any]) {
-        var request = URLRequest(url: URL(string: "https://m3sh-louismc4.c9users.io/facebook")!)
+        var request = URLRequest(url: URL(string: "https://m3sh.herokuapp.com/facebook")!)
         request.httpMethod = "POST"
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: params)

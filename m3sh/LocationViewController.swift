@@ -107,7 +107,7 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     }
         
     func locationPost(params: [String:Any]) {
-        var request = URLRequest(url: URL(string: "https://m3sh-louismc4.c9users.io/location")!)
+        var request = URLRequest(url: URL(string: "https://m3sh.herokuapp.com/location")!)
         request.httpMethod = "POST"
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
@@ -184,7 +184,7 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     }
     
     func safetyPost(params: [String:Any]) {
-        var request = URLRequest(url: URL(string: "https://m3sh-louismc4.c9users.io/statusupdate")!)
+        var request = URLRequest(url: URL(string: "https://m3sh.herokuapp.com/statusupdate")!)
         request.httpMethod = "POST"
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
@@ -236,10 +236,11 @@ class LocationViewController : UIViewController, CLLocationManagerDelegate, FBSD
     
     func show(msg : String){
         DispatchQueue.main.async() {
-            let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: UIAlertControllerStyle.alert)
-            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-            alert.addAction(action)
-            self.present(alert, animated: true, completion: nil)
+            let alert = UIAlertView()
+            alert.title = "Alert"
+            alert.message = msg
+            alert.addButton(withTitle: "Okay")
+            alert.show()
         }
     }
 }
