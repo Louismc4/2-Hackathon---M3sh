@@ -166,7 +166,7 @@ function drawArrows() {
         var point2;
         var headPoint = clusterLoop.head.network.head.mesh.position;
         var thisToHeadDist = calculateVector(headPoint, point1);
-        console.log(clusterLoop.head.network.head, clusterLoop.hashTable[key1]);
+        //console.log(clusterLoop.head.network.head, clusterLoop.hashTable[key1]);
         if (clusterLoop.hashTable[key1] != clusterLoop.head.network.head) {
             for (var key2 in clusterLoop.hashTable) {
                 var endPoint = clusterLoop.hashTable[key2].mesh.position;

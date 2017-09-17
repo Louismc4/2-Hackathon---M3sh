@@ -45,6 +45,14 @@ function swipeFocusBack() {
     }
 }
 
+function rotateSmoothForward() {
+    rotatingForward = true;
+}
+
+function rotateSmoothBackward() {
+    rotatingBackward = true;   
+}
+
 function onGetKeyDown(event) {
     var inputKeyCode = event.keyCode;
     if (inputKeyCode == 39) {
@@ -52,8 +60,12 @@ function onGetKeyDown(event) {
     } else if (inputKeyCode == 37) {
         swipeFocusBack();
     } else if (inputKeyCode == 76) {
-        cameraController.rotateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
+        //cameraController.rotateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
+        if (!rotatingBackward)
+            rotateSmoothForward();
     } else if (inputKeyCode == 74) {
-        cameraController.rotateOnAxis(new THREE.Vector3(0, 0, -1), 0.1);
+        //cameraController.rotateOnAxis(new THREE.Vector3(0, 0, -1), 0.1);
+        if (!rotatingForward)
+            rotateSmoothBackward();
     }
 }

@@ -94,6 +94,8 @@
             var displayAvatar = "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png";
             //var displayAvatar = "https://scontent-sea1-1.xx.fbcdn.net/v/t1.0-1/p160x160/16265530_1231091583628276_7837519066771118514_n.jpg?oh=0bfb16c34231253f4aafbe78ec2599ba&oe=5A4C2531";
             var arrows = new THREE.Object3D();
+            var rotatingForward = false;
+            var rotated = 0;
             var nodePolygons = 64;
             var nodeScale = 0.25;
             var camSpeed = 10;
@@ -268,6 +270,14 @@
                 updateSize();
                 transformCameraLoop();
                 transformNodes();
+                if (rotatingForward && rotated < 2) {
+                    cameraController.rotateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
+                    rotated += 0.1;
+                    if (rotated >= 0.785398*2) {
+                        rotatingForward = false;
+                        rotated = 0;
+                    }
+                }
                 for (var i = 0; i < views.length; i++) {
                     var view = views[i];
                     var camera = view.camera;
