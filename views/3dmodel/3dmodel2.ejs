@@ -1,0 +1,268 @@
+<% include ../partials/headermodel2.ejs %>
+
+<html>
+    <head>
+        <script src="public/leap-0.6.4.min.js"></script>
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+				color: #0080ff;
+			}
+        </style>
+        <style>
+            .vignette {
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      box-shadow: 0 0 200px rgba(0,0,0,1) inset;
+                    
+                    }
+                    
+            .transform {
+                      -webkit-transition: all 1s ease;  
+                      -moz-transition: all 1s ease;  
+                      -o-transition: all 1s ease;  
+                      -ms-transition: all 1s ease;  
+                      transition: all 1s ease;
+                    }
+                    
+            .transform-active {
+                      opacity: 0.8;
+                    }
+        </style>
+    </head>
+    <body>
+        <div class="vignette"></div>
+        <div class="vignette"></div>
+        <div class="vignette">
+          <img id="top" class="transform" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" style="border-radius:50%; width:25%; height:auto; margin: 25% auto; display: block; opacity: 0; transform: scaleX(-1);">
+        </div>
+        <div id="container">
+        </div>
+        <script>
+            var scene, cameraController, renderer, clusterLoop, windowWidth, windowHeight;
+            var currentFocus = null, nodeSelected = false, detailDisplay = null;
+            var cameraMoving = false, cameraControlTarget = new THREE.Vector3(0,0,0);
+            var cameraScaling = false, cameraScaleTarget = 1;
+            var displayAvatar = "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png";
+            //var displayAvatar = "https://scontent-sea1-1.xx.fbcdn.net/v/t1.0-1/p160x160/16265530_1231091583628276_7837519066771118514_n.jpg?oh=0bfb16c34231253f4aafbe78ec2599ba&oe=5A4C2531";
+            var arrows = new THREE.Object3D();
+            var nodePolygons = 64;
+            var nodeScale = 0.25;
+            var camSpeed = 10;
+            var sceneRadius = 500;
+            var updateDelay = 1000;
+            
+            var views = [
+                    {
+                        left: 0,
+                        top: 0,
+                        width: 1,
+                        height: 1,
+                        background: new THREE.Color(0, 0, 0),
+                        eye: [0, 1800, 0],
+                        up: [0, 0, 1],
+                        rotation: [0, 0, 0],
+                        fov: 45
+                    }
+                ];
+        
+            init();
+            renderLoop();
+            
+            function init() {
+                // setup threejs scene
+            	var container = document.getElementById('container');
+            	
+            	// init scene controllers
+            	scene = new THREE.Scene();
+            	cameraController = new THREE.Object3D();
+            	scene.add(cameraController);
+            	
+            	// init cameras
+            	for (var i = 0; i < views.length; i++) {
+            		var view = views[i];
+            		var camera = new THREE.PerspectiveCamera(view.fov, window.innerWidth/window.innerHeight, 1, 10000);	
+            		camera.position.fromArray(view.eye);	
+            		camera.up.fromArray(view.up);	
+            		camera.rotation.fromArray(view.rotation);	
+            		view.camera = camera;
+            		cameraController.add(camera);
+            		cameraControlTarget = cameraController.position;
+            		camera.lookAt(cameraController.position);
+            	}
+            
+            	// setup renderer
+            	renderer = new THREE.WebGLRenderer({ antialias: true });
+            	renderer.setPixelRatio(window.devicePixelRatio);
+            	renderer.setSize(window.innerWidth, window.innerHeight);
+            	container.appendChild(renderer.domElement);
+            	
+            	clusterLoop = new ClusterLoop();
+            	clusterLoop.validateCenter();
+            	currentFocus = clusterLoop;
+            	cameraControlTarget = currentFocus;
+            	
+            	document.addEventListener( 'mousedown', onDocumentMouseDown );
+            	document.addEventListener( 'keydown', onGetKeyDown );
+            	updateScene(initialDataGrab());
+            	drawArrows();
+            	scene.add(arrows);
+            }
+            
+            function dataGrab(locArray){
+                var ids = [];
+            	var text = [];
+                var temp = [];
+                var fbData = [];
+				for(var i = 0; i < locArray.length; i++) {
+				    ids.push(locArray[i].id);
+					temp.push(new THREE.Vector3( locArray[i].latitude,
+					  locArray[i].longitude, locArray[i].altitude ));
+					 text.push( String(locArray[i].address) );
+					 fbData.push({image: locArray[i].picture, status: locArray[i]['status'], name: locArray[i].username});
+				}
+		        return {vectors: temp, addresses: addresses};
+            }
+            
+            function grabFBData() {
+                var fbData = [];
+                <% for (var i = 0; i < locationArray.length; i++) { %>
+                    fbData.push({image: '<%=locationArray[i].picture%>', status: '<%=locationArray[i]['status']%>', name: '<%=locationArray[i].username%>'});
+                <%}%>
+                return fbData;
+            }
+            
+            function initialDataGrab() {
+                var fbData = [];
+				var ids = [];
+                var text = [];
+                var vectors = [];
+                
+                <% for (var i = 0; i < locationArray.length; i++) { %>
+                    ids.push(<%=locationArray[i].id%>);
+                    text.push( String('<%=locationArray[i].data.address%>'));
+                    vectors.push( new THREE.Vector3( <%=locationArray[i].data.longitude%>, <%=locationArray[i].data.latitude%>, <%=locationArray[i].data.altitude%> ) );
+                    fbData.push({image: '<%=locationArray[i].picture%>', status: '<%=locationArray[i]['status']%>', name: '<%=locationArray[i].username%>'});
+                <%}%>
+                return {ids: ids, statuses: text, vectors: vectors, fbData: fbData};
+            }
+            
+            function updateNode(node, newVectors, streamData, index) {
+                //var temp = new THREE.Vector3(newVectors.X[index], newVectors.Y[index], newVectors.Z[index]);
+                if (vectorsAreDifferent(node.position, newVectors[index])) {
+                    console.log("Node position changed");
+                    node.moving = true;
+                    node.translateTarget = newVectors[index];
+                }
+                if (streamData.fbData[index]['status'] != node['status']) {
+                    node['status'] = streamData.fbData[index]['status'];
+                }
+                if (node['status'] != "Safe")
+                    node.mesh.material = new THREE.MeshBasicMaterial({color: 0xff0000});
+                node.text = streamData.statuses[index];
+            }
+            
+            function updateScene(streamData) {
+                var convertedPositions = normalizeCoordPack(streamData.vectors);
+                console.log(convertedPositions);
+                for (var i = 0; i < streamData['ids'].length; i++) {
+                    if (!(streamData['ids'][i] in clusterLoop.hashTable)) {
+                        clusterLoop.newNode(streamData, i);
+                    } else {
+                        //console.log("Conversions", convertedPositions[i], streamData['ids'][i], streamData['vectors'][i]);
+                        updateNode(clusterLoop.hashTable[streamData['ids'][i]], convertedPositions, streamData, i);
+                    }
+                }
+                for (var i = 0; i < clusterLoop.hashTable.length; i++) { // delete disconnected nodes
+                    if (!(clusterLoop.hashTable[i] in streamData['ids'])) {
+                        // get THE nodenetwork with the node we want to delete
+                        clusterLoop.head.network.deleteNode(clusterLoop.hashTable[i]);
+                    }
+                }
+            }
+            
+			function updateSize() {
+				if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
+					windowWidth  = window.innerWidth;
+					windowHeight = window.innerHeight;
+					renderer.setSize ( windowWidth, windowHeight );
+				}
+			}
+
+            
+            function renderLoop() {
+                render();
+                requestAnimationFrame(renderLoop);
+            }
+            function render() {
+                updateSize();
+                transformCameraLoop();
+                transformNodes();
+                for (var i = 0; i < views.length; i++) {
+                    var view = views[i];
+                    var camera = view.camera;
+					var left   = Math.floor( windowWidth  * view.left );
+					var top    = Math.floor( windowHeight * view.top );
+					var width  = Math.floor( windowWidth  * view.width );
+					var height = Math.floor( windowHeight * view.height );
+
+					renderer.setViewport( left, top, width, height );
+					renderer.setScissor( left, top, width, height );
+					renderer.setScissorTest( true );
+					renderer.setClearColor( view.background );
+
+					camera.aspect = width / height;
+					camera.updateProjectionMatrix();
+					
+					//camera.lookAt(cameraController.position);
+					
+                    renderer.render(scene, camera);
+                }
+            }
+            
+                setInterval(function() {
+                    $.ajax({
+                        url: "/locationdata",
+                        type: 'GET',
+                        success: function(resData) {
+                            var ids = [];
+                            var text = [];
+                            var vectors = [];
+                            var fbData = [];
+                            for (var i = 0; i < resData.length; i++) {
+                                ids.push(resData[i].id);
+                                text.push( String(resData[i].data.address));
+                                vectors.push( new THREE.Vector3(resData[i].data.longitude, resData[i].data.latitude, resData[i].data.altitude));
+                                //fbData.push({image: resData[i].picture, status: resData[i].status, name: resData[i].username});
+                            }
+                            //vectors = grabVectorData();
+                            fbData = grabFBData();
+                            var streamData = {ids: ids, statuses: text, vectors: vectors, fbData: fbData};
+                            updateScene(streamData);
+                            //updateScene(dataGrab(resData));
+                        }
+                    });
+                }, 10000);
+        </script>
+    </body>
+</html>

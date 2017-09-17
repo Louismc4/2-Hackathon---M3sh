@@ -39,6 +39,12 @@ app.use(facebookRoute);
 app.use(locationRoute);
 app.use(modelRoute);
 
+var http = require("http");
+setInterval(function() {
+    http.get("http://m3sh.herokuapp.com/");
+    console.log("pinged");
+}, 30000); 
+
 app.get('*', function(request, response){
     response.send(":(");
 });

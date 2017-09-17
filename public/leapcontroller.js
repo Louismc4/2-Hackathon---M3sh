@@ -9,7 +9,19 @@ Leap.loop(function(frame) {
     console.log(gesture.type)
     switch (gesture.type){
           case "circle":
-              console.log("Circle Gesture");
+            var clockwise = false;
+            var pointableID = gesture.pointableIds[0];
+            var direction = frame.pointable(pointableID).direction;
+            var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+            
+            if (dotProduct  >  0) clockwise = true;
+            if (clockwise) {
+                cameraController.rotateOnAxis(new THREE.Vector3(0, 0, 1), 1/2);
+                console.log("Circle Gesture clockwise");
+              } else {
+                cameraController.rotateOnAxis(new THREE.Vector3(0, 0, -1), 1/2);
+                console.log("Circle Gesture counter");
+              }
               break;
           case "keyTap":
               console.log("Key Tap Gesture");
