@@ -10,21 +10,21 @@ ClusterLoop.prototype.validateCenter = function() {
 }
 
 ClusterLoop.prototype.newNode = function(streamData, index) {
-    var temp = normalizeCoordPack(streamData.x, streamData.y, streamData.z);
-    var vectorLoc = new THREE.Vector3(temp.X[index], temp.Y[index], temp.Z[index]);
+    var vectorLoc = normalizeCoordPack(streamData.vectors)[index];
+    //var vectorLoc = new THREE.Vector3(temp.X[index], temp.Y[index], temp.Z[index]);
     var cluster;
-    console.log("Created new node", this);
+    console.log("Created new node");
     if (!this.head) {
         cluster = this.newCluster(new THREE.Object3D(), new NodeNetwork(), new THREE.MeshBasicMaterial({color: 0x00ff00}));
     } else {
         cluster = this.checkForClusterLink(vectorLoc);
     }
-    cluster.network.newNode(vectorLoc, cluster, streamData.statuses[index], streamData['ids'][index], this);
+    cluster.network.newNode(vectorLoc, cluster, streamData, index, this);
     // cluster.recalculateArrows(); TODO once we get node connections
 }
 ClusterLoop.prototype.checkForClusterLink = function(streamData) {
     // check node connections when we get real connection data
-    // -- TODO: placeholder cluster return
+    // -- head cluster return
     return this.head;
 }
 ClusterLoop.prototype.newCluster = function(arrGroup, network, color) {
@@ -76,7 +76,10 @@ NodeNetwork.prototype.push = function(input, clusterLoop) {
         translateTarget: new THREE.Vector3(0, 0, 0),
         mesh: input.mesh,
         id: input.id,
-        text: input.text
+        text: input.text,
+        fbName: input.name,
+        fbImage: input.image,
+        status: input['status']
     }
     
     if(!head) { // no nodes so init the primary node as head
@@ -97,14 +100,20 @@ NodeNetwork.prototype.push = function(input, clusterLoop) {
     this.nodeNum += 1;
     clusterLoop.nodeNum += 1;
 }
-NodeNetwork.prototype.newNode = function(vectorLoc, cluster, text, id, clusterLoop) {
+NodeNetwork.prototype.newNode = function(vectorLoc, cluster, streamData, index, clusterLoop) {
+    var text = streamData.statuses[index];
+    var id = streamData['ids'][index];
     var geom = new THREE.SphereGeometry(nodePolygons, nodePolygons, nodePolygons);
-    //var node = new THREE.Mesh(geom, cluster.material);
-    var node = new THREE.Mesh(geom);
+    var node = new THREE.Mesh(geom, cluster.material);
+    //var node = new THREE.Mesh(geom);
     node.scale.set(nodeScale, nodeScale, nodeScale);
     node.position.set(vectorLoc.x, vectorLoc.y, vectorLoc.z);
+    var fbName = streamData.fbData[index].name;
+    var fbImage = streamData.fbData[index].image;
+    var fbStatus = streamData.fbData[index]['status'];
+    if (fbStatus != "Safe") node.material = new THREE.MeshBasicMaterial({color: 0xff0000});
     scene.add(node);
-    cluster.network.push({ mesh: node, text: text, id: id }, clusterLoop);
+    cluster.network.push({ mesh: node, text: text, id: id, name: fbName, image: fbImage, status: fbStatus }, clusterLoop);
 }
 NodeNetwork.prototype.getCenter = function() {
     var x = 0;
@@ -118,4 +127,33 @@ NodeNetwork.prototype.getCenter = function() {
         }
     }
     return new THREE.Vector3(x/this.len, y/this.len, z/this.len);
+}
+NodeNetwork.prototype.deleteNode = function(node) {
+    var current = this.head,
+        prev;
+    // delete head case
+    this.hashTable[node.id] = null;
+    clusterLoop.hashTable[node.id] = null;
+    scene.remove(node);
+    if (current == node) {
+        this.head = this.head.next;
+        this.head.prev = current.prev;
+        this.head.prev.next = this.head;
+        this.head.next.prev = this.head;
+        
+        if (this.head.next.mesh.position == this.head.mesh.position) this.head = null; // only one node, get rid of the cluster and done
+        return this; // we are done
+    }
+    
+    while (current.next.mesh.position != this.head.mesh.position) {
+        if (current.mesh.position == node.mesh.position) {
+            prev.next = current.next;
+            current.next.prev = prev;
+            return this; // we are done
+        }
+        prev = current;
+        current = current.next;
+    }
+    console.log("Failed");
+    return this;
 }

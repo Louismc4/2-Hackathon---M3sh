@@ -1,5 +1,9 @@
 function toggleFocus(clusterLoop) {
     if (currentFocus == clusterLoop) {
+        if (clusterLoop.head.next == clusterLoop.head) {
+            nodeSelected = true;
+            return clusterLoop.head.network.head;
+        }
         nodeSelected = false;
         return clusterLoop.head;
     } else if (currentFocus.parent == clusterLoop) {
@@ -45,6 +49,11 @@ function transformCameraLoop() {
         
         if (!vectorsAreDifferent(cameraController.position, cameraControlTarget)) { 
             cameraMoving = false;
+            if (nodeSelected) {
+                document.getElementById("left").style.opacity = "0.8";
+                document.getElementById("right").style.opacity = "0.8";
+                document.getElementById("top").style.opacity = "0.8";
+            }
         } else {
             if (cameraController.position.x > cameraControlTarget.x) cameraController.position.x -= camSpeed;
             else if (cameraController.position.x < cameraControlTarget.x) cameraController.position.x += camSpeed;

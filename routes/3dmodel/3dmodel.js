@@ -5,14 +5,19 @@ var express = require('express'),
 var db = admin.database();    
   
 router.get("/3dmodel", function(request, response){
-    db.ref('/locations/').once('value', function(snapshot) {
+    db.ref('/users/').once('value', function(snapshot) {
         var locArray = [];
         for(var key in snapshot.val()){
-            var dataObj = {
-                id : key,
-                data : snapshot.val()[key]
+            if(snapshot.val()[key]['location'] !== undefined){
+                var dataObj = {
+                    id : key,
+                    data : snapshot.val()[key]['location'],
+                    picture : snapshot.val()[key].picture,
+                    status : snapshot.val()[key]['status'],
+                    username : snapshot.val()[key].username
+                }
+                locArray.push(dataObj);
             }
-            locArray.push(dataObj);
         }
         response.render('../views/3dmodel/3dmodel', {locationArray : locArray});
     }, function(error){
@@ -28,7 +33,10 @@ router.get("/locationdata", function(request, response){
         for(var key in snapshot.val()){
             var dataObj = {
                 id : key,
-                data : snapshot.val()[key]
+                data : snapshot.val()[key],
+                picture : snapshot.val()[key].picture,
+                status : snapshot.val()[key]['status'],
+                username : snapshot.val()[key].username
             }
             locArray.push(dataObj);
         }

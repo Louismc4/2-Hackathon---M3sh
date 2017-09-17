@@ -1,26 +1,23 @@
-function normalizeCoordPack(coordPackX, coordPackY, coordPackZ) {
-    
-    console.log(coordPackX);
+function normalizeCoordPack (coordPack) {
     var topBound = null, bottomBound = null, rightBound = null, leftBound = null, frontBound = null, backBound = null;
-    for (var i = 0; i < coordPackX.length; i++) {
-        if (coordPackX[i] > leftBound || leftBound == null) leftBound = coordPackX[i];
-        if (coordPackX[i] < rightBound || rightBound == null) rightBound = coordPackX[i];
-        if (coordPackY[i] > frontBound || frontBound == null) frontBound = coordPackY[i];
-        if (coordPackY[i] < backBound || backBound == null) backBound = coordPackY[i];
-        if (coordPackZ[i] > topBound || topBound == null) topBound = coordPackZ[i];
-        if (coordPackZ[i] < bottomBound || bottomBound == null) bottomBound = coordPackZ[i];
+    for (var i = 0; i < coordPack.length; i++) {
+        if (coordPack[i].x > leftBound || leftBound == null) leftBound = coordPack[i].x;
+        if (coordPack[i].x < rightBound || rightBound == null) rightBound = coordPack[i].x;
+        if (coordPack[i].y > frontBound || frontBound == null) frontBound = coordPack[i].y;
+        if (coordPack[i].y < backBound || backBound == null) backBound = coordPack[i].y;
+        if (coordPack[i].z > topBound || topBound == null) topBound = coordPack[i].z;
+        if (coordPack[i].z < bottomBound || bottomBound == null) bottomBound = coordPack[i].z;
     }
     var vertLength = topBound - bottomBound;
     var horiLength = leftBound - rightBound;
     var depthLength = frontBound - backBound;
-    var coordPack = [];
+
     for (var i = 0; i < coordPack.length; i++) {
-        coordPackX[i] = (Math.abs(coordPackX[i] - rightBound) / horiLength)*sceneRadius;
-        coordPackY[i] = (Math.abs(coordPackY[i] - backBound) / depthLength)*sceneRadius;
-        coordPackZ[i] = (Math.abs(coordPackZ[i] - bottomBound) / vertLength)*sceneRadius;
-        coordPack.push(new THREE.Vector3(coordPackX[i], coordPackY[i], coordPackZ[i]));
+        coordPack[i].x = (Math.abs(coordPack[i].x - rightBound) / horiLength)*sceneRadius;
+        coordPack[i].y = (Math.abs(coordPack[i].y - backBound) / depthLength)*sceneRadius;
+        coordPack[i].z = (Math.abs(coordPack[i].z - bottomBound) / vertLength)*sceneRadius;
     }
-    return {X: coordPackX, Y: coordPackY, Z: coordPackZ};
+    return coordPack;
 }
 
 function vectorsAreDifferent(startPos, endPos) {
@@ -32,11 +29,10 @@ function vectorsAreDifferent(startPos, endPos) {
 
 
 function calculateVector(startPos, endPos) {
-    var dist = new THREE.Vector3(0, 0, 0);
-    dist.x = Math.abs(endPos.x - startPos.x);
-    dist.y = Math.abs(endPos.y - startPos.y);
-    dist.z = Math.abs(endPos.z - startPos.z);
-    return dist;
+    var dx = Math.abs(endPos.x - startPos.x);
+    var dy = Math.abs(endPos.y - startPos.y);
+    var dz = Math.abs(endPos.z - startPos.z);
+    return Math.sqrt((dx*dx) + (dy*dy) + (dz*dz));
 }
 
 
@@ -58,6 +54,7 @@ function getCenterPosition(target) {
 function displayNodeDetails() {
     
     // set profile pic
+    displayAvatar = currentFocus.fbImage;
     var detailGroup = new THREE.Object3D();
     var geometry = new THREE.TorusGeometry( 24, 1, 16, 50 );
     geometry.scale(1, 1, 3);
@@ -76,9 +73,15 @@ function displayNodeDetails() {
     var loader = new THREE.FontLoader();
     loader.load( '../public/fonts/helvetiker_regular.typeface.json', function ( font ) {
         var material = new THREE.MeshBasicMaterial({
-            color: 0x0022ff
+            color: 0xffff00
         });
         var textGeom = new THREE.TextGeometry( currentFocus.text, {
+            font: font, 
+            size: 5,
+            height: 1,
+            curveSegments: 4
+        });
+        var textGeom2 = new THREE.TextGeometry( currentFocus.fbName, {
             font: font, 
             size: 5,
             height: 1,
@@ -87,21 +90,33 @@ function displayNodeDetails() {
         textGeom.rotateX(Math.PI/2);
         textGeom.rotateY(-Math.PI);
         textGeom.normalize();
-        textGeom.scale(15, 15, 15);
+        textGeom.scale(30, 30, 30);
         textGeom.computeBoundingBox();
         textGeom.textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+        textGeom2.rotateX(Math.PI/2);
+        textGeom2.rotateY(-Math.PI);
+        textGeom2.normalize();
+        textGeom2.scale(8, 8, 8);
+        textGeom2.computeBoundingBox();
+        textGeom2.textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
         var textMesh = new THREE.Mesh( textGeom, material );
+        var textMesh2 = new THREE.Mesh( textGeom2, material );
         var modifier = new THREE.BendModifier();
         var direction = new THREE.Vector3( 0, 1, 0 );
 		var axis =  new THREE.Vector3( 0, 0, 1 );
-		var angle = Math.PI / 6;
+		var angle = Math.PI / 3;
+		var angle2 = Math.PI / 6;
         modifier.set( direction, axis, angle ).modify( textMesh.geometry );
-        textMesh.position.set(currentFocus.position.x, currentFocus.position.y + 25.5, currentFocus.position.z - 1);
-        //textMesh.rotateOnAxis( new THREE.Vector3(1, 0, 0), -Math.PI/2 );
+        textMesh.position.set(currentFocus.position.x, currentFocus.position.y + 27, currentFocus.position.z - 1);
         textMesh.scale.y *= -1;
         textMesh.rotateOnAxis( new THREE.Vector3(0, 1, 0), Math.PI );
+        modifier.set( direction, axis, angle2 ).modify( textMesh2.geometry );
+        textMesh2.position.set(currentFocus.position.x, currentFocus.position.y + 28, currentFocus.position.z + 2);
+        textMesh2.scale.y *= -1;
+        textMesh2.rotateOnAxis( new THREE.Vector3(0, 1, 0), Math.PI );
         //textMesh.rotateOnAxis( new THREE.Vector3(0, 0, 1), Math.PI );
         detailGroup.add(textMesh);
+        detailGroup.add(textMesh2);
     } );
 
     detailGroup.position.z -= (currentFocus.mesh.geometry.parameters.radius*0.15);
@@ -136,6 +151,41 @@ function transformNodes() {
                 if (current.position.z > current.translateTarget.z) current.position.z -= camSpeed;
                 else if (current.position.z < current.translateTarget.z) current.position.z += camSpeed;
             }
+        }
+    }
+    drawArrows();
+}
+
+
+function drawArrows() {
+    for (var i = arrows.children.length - 1; i >= 0; i--) {
+        arrows.remove(arrows.children[i]);
+    }
+    for (var key1 in clusterLoop.hashTable) {
+        var point1 = clusterLoop.hashTable[key1].mesh.position;;
+        var point2;
+        var headPoint = clusterLoop.head.network.head.mesh.position;
+        var thisToHeadDist = calculateVector(headPoint, point1);
+        console.log(clusterLoop.head.network.head, clusterLoop.hashTable[key1]);
+        if (clusterLoop.hashTable[key1] != clusterLoop.head.network.head) {
+            for (var key2 in clusterLoop.hashTable) {
+                var endPoint = clusterLoop.hashTable[key2].mesh.position;
+                if (calculateVector(headPoint, endPoint) < thisToHeadDist) {
+                    if (calculateVector(point1, endPoint) < thisToHeadDist) {
+                        point2 = endPoint;
+                    } else {
+                        point2 = headPoint;
+                    }
+                } else {
+                    point2 = headPoint;
+                }
+            }
+            var lineGeometry = new THREE.Geometry();
+            lineGeometry.vertices.push(point1, point2);
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x00aaff } );
+            var arrow = new THREE.Line( lineGeometry, lineMaterial );
+            arrows.add(arrow);
         }
     }
 }

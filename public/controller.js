@@ -4,19 +4,32 @@ function onDocumentMouseDown(event) {
 function toggleFocusControl() {
     currentFocus = toggleFocus(clusterLoop);
     // setup node detail display
+    //console.log(currentFocus.fbImage);
+    displayAvatar = currentFocus.fbImage;
+    
     if (nodeSelected) {
+    	scene.remove(detailDisplay);
+        document.getElementById("left").src = displayAvatar;
+    	document.getElementById("right").src = displayAvatar;
+    	document.getElementById("top").src = displayAvatar;
     	detailDisplay = displayNodeDetails(currentFocus, scene);
     } else if (detailDisplay != null) {
+        document.getElementById("left").style.opacity = "0";
+        document.getElementById("right").style.opacity = "0";
+        document.getElementById("top").style.opacity = "0";
     	scene.remove(detailDisplay);
     	detailDisplay = null;
     }
-    
+    console.log(displayAvatar);
     updateCameraPosition();
     zoomCamera();
 }
 
 function swipeFocusForward() {
     if (currentFocus.next != null) {
+        document.getElementById("left").style.opacity = "0";
+        document.getElementById("right").style.opacity = "0";
+        document.getElementById("top").style.opacity = "0";
         currentFocus = currentFocus.next;
         updateCameraPosition();
         if (nodeSelected) {
@@ -28,6 +41,9 @@ function swipeFocusForward() {
 
 function swipeFocusBack() {
     if (currentFocus.prev != null) {
+        document.getElementById("left").style.opacity = "0";
+        document.getElementById("right").style.opacity = "0";
+        document.getElementById("top").style.opacity = "0";
         currentFocus = currentFocus.prev;
         updateCameraPosition();
         if (nodeSelected) {

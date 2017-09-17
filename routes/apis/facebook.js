@@ -70,7 +70,7 @@ router.post("/statusupdate", function(request, response){
     token = outerKey['token'];
     
     graph.setAccessToken(token);
-    
+
     var statusString = '';
     
     if (status == 0){
@@ -78,26 +78,26 @@ router.post("/statusupdate", function(request, response){
     } else if (status == 1){
         statusString = 'Safe';
     }
-    db.ref('/users/' + id + '/').update({'status' : statusString}).then(function(napshot){
+    console.log(statusString);
+    db.ref('/users/' + id).update({'/status' : statusString}).then(function(napshot){
         db.ref('/users/' + id + '/location').once('value').then(function(snapshot){
             var msg = username + " Status Update : In need of help. \n Address : " + snapshot.val().address + ". \n Latitude : " + snapshot.val().latitude + ".\n Longitude :  " + snapshot.val().longitude + ".\n Altitude : " + snapshot.val().altitude;
             var wallPost = {
               message: msg
             }
-            graph.post("/feed/?privacy={'value':'SELF'}", wallPost, function(err, res) {
-                if(err){
-                    console.log(err);
-                    response.send(Error(err));
-                    return
-                } else {
-                    // returns the post id 
-                    console.log(res); // { id: xxxxx} 
-                    response.send({id : id, msg : "Hang on " + username + ". First responders are on their way."});
-                }
-            });
-        }, function(error){
-            if(error){
-                response.send(Error(error));
+            if(status == 0){
+                graph.post("/feed/?privacy={'value':'SELF'}", wallPost, function(err, res) {
+                    var obj = {id : id, msg : "Hang on " + username + ". First responders are on their way."}
+                    if(err){
+                        console.log(err);
+                        response.send(obj);
+                        return
+                    } else {
+                        // returns the post id
+                        console.log(res); // { id: xxxxxx
+                        response.send(obj);
+                    }
+                });
             }
         });
     });
